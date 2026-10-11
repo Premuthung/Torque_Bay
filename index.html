@@ -1,4 +1,9 @@
+<!doctype html>
+<html lang="en">
+<head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="A workshop for modifying bikes and cars: fit parts, read the fitment reasoning, watch the dials, race the build and see the airflow in a 3D wind tunnel.">
 <title>Torque Bay Workshop</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=Big+Shoulders+Display:wght@700;900&display=swap">
 <style>
@@ -14,7 +19,9 @@
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-body{background:var(--floor);color:var(--cream);font-family:var(--f-body);font-size:16px;line-height:1.55;
+html{-webkit-text-size-adjust:100%}
+img{max-width:100%}
+body{margin:0;background:var(--floor);color:var(--cream);font-family:var(--f-body);font-size:16px;line-height:1.55;
   background-image:radial-gradient(900px 480px at 50% -80px,rgba(201,162,74,.13),transparent 70%)}
 .wrap{max-width:1200px;margin-inline:auto;padding-inline:clamp(16px,4vw,32px)}
 h1,h2,h3{font-family:var(--f-display);font-weight:900;text-transform:uppercase;letter-spacing:.02em;line-height:1;margin:0;text-wrap:balance}
@@ -188,6 +195,8 @@ section{padding-block:clamp(40px,7vw,72px)}
 .tile{background:var(--panel);border:1px solid var(--steel);padding:8px 10px;display:flex;flex-direction:column;min-width:0}
 .tile b{font-family:var(--f-data);font-weight:700;font-size:1.7rem;line-height:1.15;font-variant-numeric:tabular-nums;white-space:nowrap}
 .tile span{font-family:var(--f-data);text-transform:uppercase;letter-spacing:.1em;font-size:.74rem;color:var(--dim)}
+.meter{display:block;height:5px;background:var(--steel);margin-top:5px}
+.meter i{display:block;height:100%;width:0;background:var(--brass)}
 .g-ctl{display:flex;flex-direction:column;gap:10px}
 .enter.sm{font-size:1.15rem;padding:8px 18px;box-shadow:0 4px 0 #7c1f16}
 .pedals{display:grid;grid-template-columns:1fr 1.4fr;gap:10px}
@@ -200,6 +209,33 @@ section{padding-block:clamp(40px,7vw,72px)}
 .g-verdict{font-family:var(--f-display);font-weight:700;font-size:1.35rem;text-transform:uppercase;letter-spacing:.03em;color:var(--brass)}
 .sheet.runs td:last-child,.sheet.runs th:last-child{text-align:left}
 @media (max-width:900px){.g-dash{grid-template-columns:minmax(0,1fr)}.g-gauges{max-width:340px}}
+
+/* wind tunnel */
+.tun{padding:0;overflow:hidden}
+.t-view{position:relative;background:#020308}
+#tCanvas{display:block;width:100%;height:clamp(300px,50vw,600px);touch-action:pan-y;cursor:grab}
+#tCanvas:active{cursor:grabbing}
+.t-msg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:16px;color:#9fb2d6;font-family:var(--f-data);text-transform:uppercase;letter-spacing:.12em;pointer-events:none}
+.t-views{position:absolute;left:12px;top:12px;right:12px}
+.t-views .btn{background:rgba(6,9,16,.72);border-color:#33466e;color:#dbe6ff;padding:5px 11px}
+.t-legend{position:absolute;left:12px;right:12px;bottom:10px;display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;font-family:var(--f-data);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:#c9d6ee;text-shadow:0 1px 3px #000;pointer-events:none}
+.t-legend i{width:110px;height:6px;background:linear-gradient(90deg,#0d29ff,#1a8cff,#c9f6ff)}
+.t-bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;padding:12px 16px}
+.t-bar label{font-family:var(--f-data);text-transform:uppercase;letter-spacing:.1em;font-size:.85rem;color:var(--dim)}
+.t-bar label b{color:var(--cream);font-size:1.05rem;font-variant-numeric:tabular-nums}
+.t-bar input{flex:1 1 180px;min-width:0;accent-color:var(--brass)}
+.t-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:24px;align-items:start}
+.t-mods{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.tmod{background:var(--panel);border:1px solid var(--steel);padding:12px 14px;text-align:left;display:flex;flex-direction:column;gap:6px;min-width:0}
+.tmod:hover{border-color:var(--steel-hi)}
+.tmod[aria-pressed="true"]{border-color:var(--red);outline:1px solid var(--red);outline-offset:3px}
+.tmod[aria-pressed="true"] .meta{color:#ff8b7c}
+.tmod b{font-weight:600}
+.tmod .meta{font-family:var(--f-data);font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
+.tmod p{font-size:.9rem;color:#d6cfbe}
+.t-g{grid-template-columns:repeat(2,minmax(0,1fr))}
+.t-sum{margin-top:12px;color:var(--dim);font-size:.94rem}
+@media (max-width:900px){.t-grid{grid-template-columns:minmax(0,1fr)}}
 
 /* parts wall */
 .wall{display:flex;flex-direction:column;gap:40px}
@@ -252,6 +288,8 @@ footer p{max-width:85ch}
 }
 @media (prefers-reduced-motion:reduce){.shutter,.g .needle{transition:none}.hero-bg,.tube,.neon{animation:none}}
 </style>
+</head>
+<body>
 
 <div class="shutter" id="shutter">
   <div class="sign pin">
@@ -268,7 +306,7 @@ footer p{max-width:85ch}
   <div class="wrap">
     <div class="brand">Torque <span class="neon">Bay</span></div>
     <nav aria-label="Workshop areas">
-      <a href="#bay">Roll in</a><a href="#lift">The lift</a><a href="#sheet">Build sheet</a><a href="#strip">Test strip</a><a href="#wall">Parts wall</a>
+      <a href="#bay">Roll in</a><a href="#lift">The lift</a><a href="#sheet">Build sheet</a><a href="#strip">Test strip</a><a href="#tunnel">Wind tunnel</a><a href="#wall">Parts wall</a>
     </nav>
   </div>
 </header>
@@ -357,7 +395,7 @@ footer p{max-width:85ch}
     <div class="sec-head">
       <span class="label">Step four</span>
       <h2>Test strip</h2>
-      <p class="lede">Take the build on the lift down a 400 m strip against the stock version of the same vehicle. How hard it pulls, where it tops out, how fast it stops and how the exhaust sounds all come from the instrument panel figures.</p>
+      <p class="lede">Take the build on the lift down a 400 m strip against the stock version of the same vehicle. Drive it yourself, or press Auto run to send both flat out to their top speed and back to a stop, then read the results side by side. How hard it pulls, where it tops out, how fast it stops and how the exhaust sounds all come from the instrument panel figures.</p>
     </div>
     <div class="col">
       <div class="box game" id="game" tabindex="0" aria-label="Test strip. Hold the up arrow to accelerate and the down arrow to brake.">
@@ -369,11 +407,12 @@ footer p{max-width:85ch}
             <div class="tile"><b id="gTime">0.00 s</b><span>Run time</span></div>
             <div class="tile"><b id="gDist">0 m</b><span>Distance</span></div>
             <div class="tile"><b id="gGap">0.0 m</b><span>Gap to stock</span></div>
-            <div class="tile"><b id="gDb">–</b><span>Exhaust, full throttle</span></div>
+            <div class="tile"><b id="gDb">–</b><span>Exhaust, full throttle</span><i class="meter" title="Sound level now"><i id="gLvl"></i></i></div>
           </div>
           <div class="g-ctl">
             <div class="btns">
               <button class="enter sm" id="gStart" type="button">Start run</button>
+              <button class="btn" id="gAuto" type="button">Auto run</button>
               <button class="btn" id="gStop" type="button">Engine off</button>
               <button class="btn" id="gMute" type="button" aria-pressed="true">Sound on</button>
             </div>
@@ -387,14 +426,51 @@ footer p{max-width:85ch}
       </div>
       <p class="g-verdict" id="gVerdict"></p>
       <div class="scroll sheet runs"><table>
-        <thead><tr><th>Measure</th><th>Your run</th><th>This build, perfect run</th><th>Stock, perfect run</th></tr></thead>
+        <thead><tr id="gHead"></tr></thead>
         <tbody id="gRes"></tbody>
       </table></div>
     </div>
   </div>
 </section>
 
-<section id="wall"style="background:var(--bench);border-top:1px solid var(--steel)">
+<section class="lift" id="tunnel">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="label">Step five</span>
+      <h2 id="tTitle">Wind tunnel</h2>
+      <p class="lede">See what outer body parts do to the air. Fit a part and watch the streamlines re-form around the 3D model: where the air speeds up, where it piles up, and where it breaks into turbulence behind the vehicle. Drag to turn the model.</p>
+    </div>
+    <div class="col">
+      <div class="box tun">
+        <div class="t-view">
+          <canvas id="tCanvas" aria-label="3D wind tunnel view. Drag to rotate."></canvas>
+          <p class="t-msg" id="tMsg">The 3D wind tunnel starts when this section is on screen</p>
+          <div class="btns t-views" id="tViews">
+            <button class="btn" type="button" data-v="side">Side</button><button class="btn" type="button" data-v="front">Front</button><button class="btn" type="button" data-v="rear">Rear</button><button class="btn" type="button" data-v="top">Top</button>
+            <button class="btn" type="button" data-v="in" aria-label="Zoom in">+</button><button class="btn" type="button" data-v="out" aria-label="Zoom out">−</button>
+          </div>
+          <div class="t-legend"><span>Slow air, high pressure</span><i></i><span>Fast air, low pressure</span><span>· Wavy lines = turbulence · Red = added part</span></div>
+        </div>
+        <div class="t-bar">
+          <label for="tSpeed">Wind speed <b id="tSpeedV">120 km/h</b></label>
+          <input type="range" id="tSpeed" min="60" max="200" step="10" value="120">
+          <button class="btn" type="button" id="tMatch">Match the build on the lift</button>
+          <button class="btn" type="button" id="tClear">Stock body</button>
+        </div>
+      </div>
+      <div class="t-grid">
+        <div class="t-mods" id="tMods"></div>
+        <div class="box">
+          <div class="cl-head"><h3>Aero panel</h3><span class="label">Brass mark = stock body</span></div>
+          <div class="gauges t-g" id="tGauges"></div>
+          <p class="t-sum" id="tSum"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="wall" style="background:var(--bench);border-top:1px solid var(--steel)">
   <div class="wrap">
     <div class="sec-head">
       <span class="label">On the pegboard</span>
@@ -407,7 +483,7 @@ footer p{max-width:85ch}
 
 <footer>
   <div class="wrap">
-    <p><strong style="color:var(--cream)">How the numbers are made.</strong> The dials come from a simplified physics model: power and torque percentages per part, power-to-weight for acceleration, a cube-root power law and a gearing limit for top speed. They show direction and rough size of a change. They are not dyno results. The test strip is calibrated to the same figures, so a perfect launch there reaches 100 km/h in the time the panel shows, and the engine sound is synthesised from cylinder count, revs and the exhaust dial. Real gains depend on the exact part, the tune and the condition of the engine.</p>
+    <p><strong style="color:var(--cream)">How the numbers are made.</strong> The dials come from a simplified physics model: power and torque percentages per part, power-to-weight for acceleration, a cube-root power law and a gearing limit for top speed. They show direction and rough size of a change. They are not dyno results. The test strip is calibrated to the same figures, so a perfect launch there reaches 100 km/h in the time the panel shows, and the engine sound is synthesised from cylinder count, revs and the exhaust dial. The wind tunnel draws its streamlines from the outline of one generic car and one generic bike, pushed aside by a simple displacement rule. It is a picture of how the air behaves, not a fluid simulation, and its drag and downforce figures are typical values for each kind of part. Real gains depend on the exact part, the tune and the condition of the engine.</p>
     <p><strong style="color:var(--cream)">Road law.</strong> In India, Section 52 of the Motor Vehicles Act restricts altering a vehicle from its registered specification, and loud or cat-less exhausts are routinely fined and can fail the PUC test. Structural, lighting and emissions changes can also affect insurance and warranty. Check your RTO and insurer before fitting anything.</p>
     <p><strong style="color:var(--cream)">Coverage.</strong> This first version carries 14 popular bikes and cars.</p>
     <p><strong style="color:var(--cream)">Photographs.</strong> Photos are from Wikimedia Commons, cropped and resized, used under the licence shown on each. They show the model line or the type of part, not the exact item for your vehicle; year, variant and brand may differ from the listed specification. Where no free photo was found, a workshop sketch is shown.</p>
@@ -1014,7 +1090,7 @@ function renderLift(){
      ${(k=>k?`<img class="thumb" src="img/${k}.jpg" alt="" loading="lazy" width="640" height="400">`:'')(okey(v.t,S.cat,o.id)||pkey(S.cat,v.t))}<span class="meta"><span>${ok?FIT[o.fit||'stock']:FIT.no}</span><span>${o.cost?`₹${o.cost[0]}k–${o.cost[1]}k`:'fitted'}</span></span>
      <b>${o.name}</b><span class="fx">${o.fx?fxChips(v,o):'<span class="flat">baseline</span>'}</span></button>`}).join('');
   renderJob();
-  const res=calc(v,b);updateGauges(v,res);renderSheet(v,b,res);Game.sync(v,b,res);
+  const res=calc(v,b);updateGauges(v,res);renderSheet(v,b,res);Game.sync(v,b,res);Tunnel.sync(v,b);
 }
 const ul=a=>`<ul>${a.map(x=>`<li>${x}</li>`).join('')}</ul>`;
 function renderJob(){
@@ -1093,42 +1169,57 @@ const Snd={ctx:null,on:true,ch:null,boost:0,
  init(){
   if(this.ctx){this.ctx.resume();return}
   const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
-  const c=this.ctx=new AC(),G=v=>{const g=c.createGain();g.gain.value=v;return g},O=t=>{const o=c.createOscillator();o.type=t;o.start();return o},
+  const c=this.ctx=new AC();c.resume();
+  const G=v=>{const g=c.createGain();g.gain.value=v;return g},O=t=>{const o=c.createOscillator();o.type=t;o.start();return o},
    F=(t,f,q)=>{const b=c.createBiquadFilter();b.type=t;b.frequency.value=f;b.Q.value=q;return b};
-  this.master=G(0);const comp=c.createDynamicsCompressor();this.master.connect(comp);comp.connect(c.destination);
+  this.master=G(0);const comp=c.createDynamicsCompressor();comp.threshold.value=-14;comp.ratio.value=6;
+  this.an=c.createAnalyser();this.an.fftSize=1024;this.buf=new Float32Array(1024);
+  this.master.connect(comp);comp.connect(this.an);this.an.connect(c.destination);
   const nb=this.nb=c.createBuffer(1,c.sampleRate*2,c.sampleRate),d=nb.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
   const ns=c.createBufferSource();ns.buffer=nb;ns.loop=true;ns.start();
-  /* firing pulses (saw), a harmonic above, a sub for one and two cylinder lump, and noise for roughness */
-  this.o1=O('sawtooth');this.o2=O('sawtooth');this.o3=O('square');this.g1=G(.6);this.g2=G(.3);this.g3=G(.3);
-  this.nbp=F('bandpass',600,1.2);this.gn=G(.2);
-  /* exhaust: distortion for open pipes, a low-pass that opens with throttle, a resonance for pipe body */
-  this.shape=c.createWaveShaper();this.lp=F('lowpass',700,.8);this.body=F('peaking',120,1.1);this.body.gain.value=9;this.eng=G(0);
-  this.o1.connect(this.g1);this.o2.connect(this.g2);this.o3.connect(this.g3);ns.connect(this.nbp);this.nbp.connect(this.gn);
-  [this.g1,this.g2,this.g3,this.gn].forEach(g=>g.connect(this.shape));
-  this.shape.connect(this.lp);this.lp.connect(this.body);this.body.connect(this.eng);this.eng.connect(this.master);
-  /* turbo whistle and induction hiss */
+  /* firing pulses (saw), harmonics above so small speakers can reproduce it, a sub for one and two cylinder lump, and noise for roughness */
+  this.o1=O('sawtooth');this.o2=O('sawtooth');this.o3=O('square');this.o4=O('sawtooth');this.g1=G(.55);this.g2=G(.35);this.g3=G(.3);this.g4=G(.2);
+  this.nbp=F('bandpass',600,1);this.gn=G(.2);
+  /* exhaust: distortion for open pipes, a low-pass that opens with throttle, a pipe-body resonance, and a mid bark that grows with loudness */
+  this.shape=c.createWaveShaper();this.lp=F('lowpass',900,.8);this.body=F('peaking',240,1.2);this.body.gain.value=8;this.bark=F('peaking',950,1.4);this.bark.gain.value=0;this.eng=G(0);
+  this.o1.connect(this.g1);this.o2.connect(this.g2);this.o3.connect(this.g3);this.o4.connect(this.g4);ns.connect(this.nbp);this.nbp.connect(this.gn);
+  [this.g1,this.g2,this.g3,this.g4,this.gn].forEach(g=>g.connect(this.shape));
+  this.shape.connect(this.lp);this.lp.connect(this.body);this.body.connect(this.bark);this.bark.connect(this.eng);this.eng.connect(this.master);
+  /* turbo whistle, induction hiss, wind */
   this.ot=O('sine');this.gt=G(0);this.ot.connect(this.gt);this.gt.connect(this.master);
   this.hp=F('highpass',1400,.7);this.gi=G(0);ns.connect(this.hp);this.hp.connect(this.gi);this.gi.connect(this.master);
+  this.wf=F('bandpass',480,.5);this.gw=G(0);ns.connect(this.wf);this.wf.connect(this.gw);this.gw.connect(this.master);
   if(this.ch)this.set(this.ch);
  },
  set(ch){
   this.ch=ch;if(!this.ctx)return;
   const k=1+ch.open*0.45,cv=new Float32Array(513);for(let i=0;i<513;i++)cv[i]=Math.tanh(k*(i/256-1))/Math.tanh(k);
-  this.shape.curve=cv;this.body.frequency.value=ch.bike?150:95;this.lp.Q.value=0.8+ch.open*0.1;
-  this.g2.gain.value=ch.cyl>=3?0.45:0.25;this.g3.gain.value=ch.cyl<=2?0.5:0.12;
+  this.shape.curve=cv;this.body.frequency.value=ch.bike?260:190;this.bark.gain.value=Math.min(12,ch.open*0.55);this.lp.Q.value=0.8+ch.open*0.08;
+  this.g2.gain.value=ch.cyl>=3?0.45:0.3;this.g3.gain.value=ch.cyl<=2?0.45:0.1;this.g4.gain.value=ch.cyl>=3?0.3:0.18;
  },
- update(rpm,load,limit,dt,cut){
+ update(rpm,load,limit,dt,cut,spd){
   const c=this.ctx,ch=this.ch;if(!c||!ch)return;
   const t=c.currentTime,f=rpm/120*ch.cyl,r=rpm/limit,S=(p,v,k)=>p.setTargetAtTime(v,t,k||0.03);
-  S(this.o1.frequency,f);S(this.o2.frequency,f*2.01);S(this.o3.frequency,f*0.5);
-  S(this.nbp.frequency,clamp(f*6,150,4000));S(this.gn.gain,0.1+0.3*load);
-  S(this.lp.frequency,clamp((300+ch.open*95)*(1+1.7*load)+rpm*0.06,180,9000));
-  S(this.eng.gain,ch.vol*(0.3+0.7*load)*(0.55+0.45*r)*(cut?0.2:1),0.02);
+  S(this.o1.frequency,f);S(this.o2.frequency,f*2.01);S(this.o3.frequency,f*0.5);S(this.o4.frequency,f*4.02);
+  S(this.nbp.frequency,clamp(f*8,300,3500));S(this.gn.gain,0.02+0.42*load);
+  S(this.lp.frequency,clamp((650+ch.open*120)*(1+1.8*load)+rpm*0.12,400,11000));
+  S(this.eng.gain,ch.vol*(0.26+0.74*load)*(0.55+0.45*r)*(cut?0.25:1),0.02);
   this.boost+=((ch.turbo?load*clamp((r-0.22)/0.35,0,1):0)-this.boost)*Math.min(1,dt*3.5);
-  S(this.ot.frequency,1400+this.boost*5200,0.05);S(this.gt.gain,this.boost*this.boost*0.03*(ch.intake?1.8:1),0.05);
-  S(this.gi.gain,load*r*(ch.intake?0.07:0.015),0.05);
+  S(this.ot.frequency,1400+this.boost*5200,0.05);S(this.gt.gain,this.boost*this.boost*0.05*(ch.intake?1.8:1),0.05);
+  S(this.gi.gain,load*r*(ch.intake?0.09:0.02),0.05);
+  const w=clamp(spd/60,0,1);S(this.gw.gain,w*w*0.14,0.1);
  },
- quiet(q){if(this.ctx)this.master.gain.setTargetAtTime(q||!this.on?0:0.9,this.ctx.currentTime,0.05)},
+ /* muting also suspends the audio engine, so nothing at all is left playing in the background */
+ quiet(q){const c=this.ctx,mu=!!(q||!this.on);if(!c||(mu&&this.muted))return;this.muted=mu;clearTimeout(this.st);
+  if(this.muted){this.master.gain.setTargetAtTime(0,c.currentTime,0.04);this.st=setTimeout(()=>{if(this.muted)c.suspend()},400)}
+  else{c.resume();this.master.gain.setTargetAtTime(0.75,c.currentTime,0.05)}},
+ /* output level right now, 0 to about 0.5; drives the meter so you can see that sound is playing */
+ level(){if(!this.an||this.muted)return 0;this.an.getFloatTimeDomainData(this.buf);let s=0;for(let i=0;i<this.buf.length;i++)s+=this.buf[i]*this.buf[i];return Math.sqrt(s/this.buf.length)},
+ beep(freq,dur){
+  const c=this.ctx;if(!c)return;const o=c.createOscillator(),g=c.createGain(),t=c.currentTime;o.type='square';o.frequency.value=freq;
+  g.gain.setValueAtTime(0.0001,t);g.gain.linearRampToValueAtTime(0.13,t+0.01);g.gain.setValueAtTime(0.13,t+dur-0.03);g.gain.linearRampToValueAtTime(0.0001,t+dur);
+  o.connect(g);g.connect(this.master);o.start(t);o.stop(t+dur+0.02);
+ },
  burst(at,dur,freq,q,gain){
   const c=this.ctx,s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();s.buffer=this.nb;f.type='bandpass';f.frequency.value=freq;f.Q.value=q;
   g.gain.setValueAtTime(0.0001,at);g.gain.linearRampToValueAtTime(gain,at+0.005);g.gain.exponentialRampToValueAtTime(0.0001,at+dur);
@@ -1137,8 +1228,8 @@ const Snd={ctx:null,on:true,ch:null,boost:0,
  /* throttle shut at high revs: crackle on open pipes, blow-off on turbo engines */
  lift(){
   const c=this.ctx,ch=this.ch;if(!c||!ch)return;const t=c.currentTime;
-  if(ch.pops)for(let i=0,n=3+Math.random()*4;i<n;i++)this.burst(t+0.08+Math.random()*0.7,0.07,300+Math.random()*900,0.8,ch.vol*1.5);
-  if(ch.turbo&&this.boost>0.45)this.burst(t+0.02,0.32,2600,1,0.1);
+  if(ch.pops)for(let i=0,n=3+Math.random()*4;i<n;i++)this.burst(t+0.08+Math.random()*0.7,0.07,300+Math.random()*900,0.8,ch.vol);
+  if(ch.turbo&&this.boost>0.45)this.burst(t+0.02,0.32,2600,1,0.14);
  }
 };
 
@@ -1150,28 +1241,28 @@ const Game=(()=>{
   const COLP={body:'#cf3a2b',brass:'#c9a24a',rider:'#56616a',helmet:'#ece3cf'},COLG={body:'#7d868c',brass:'#8b959b',rider:'#3a4247',helmet:'#7d868c'};
   const keys={up:false,down:false},pad={up:false,down:false},el={};
   let W=0,H=0,ppm=60,cam=0,veh,res,P,PS,ref,refS,look={},look0={},sig='',state='off',pl,gh,m={},tRun=0,tCount=0,lights=0,acc=0,last=0,raf=0,inView=false,
-      thr=0,brk=0,cut=0,popT=0,prevTu=0,wa=0,pitch=0,parts=[],GDg=[];
-  ['gGear','gTime','gDist','gGap','gDb','gMsg','gStart','gThr','gBrake'].forEach(id=>el[id]=$('#'+id));
+      thr=0,brk=0,cut=0,popT=0,prevTu=0,wa=0,pitch=0,parts=[],GDg=[],auto=false,phase='flat',mg={},ff=false,asleep=false,lastFrame=0,lastActive=0;
+  ['gGear','gTime','gDist','gGap','gDb','gLvl','gMsg','gStart','gAuto','gThr','gBrake'].forEach(id=>el[id]=$('#'+id));
 
-  /* one physics step. Drive is power-limited (K/v) under a launch cap, drag grows with v squared and cancels drive at the power-limited top speed. */
+  /* one physics step. Drive is power-limited (K/v) under a launch cap and drag grows with v squared. On full throttle the vehicle keeps a little pull in hand, so it reaches its top speed and holds it there. */
   function simStep(s,p,th,br,dt){
     const v=s.v,top=p.N-1;if(s.shift>0)s.shift-=dt;
     let a=-p.K*v*v/p.v3-(v>0.1?0.12:0);
-    const limited=s.g===top&&v>=p.vRed[top];
-    if(th>0&&s.shift<=0&&!limited)a+=Math.min(p.cap,th*p.K/Math.max(v,0.6));
+    if(th>0&&s.shift<=0){if(v<p.vmax){a+=Math.min(p.cap,th*p.K/Math.max(v,0.6));a=Math.max(a,0.3*th)}else a=0}
     else if(th<=0&&v>0.1)a-=0.35;
     if(br>0)a-=br*p.brakeA;
-    s.v=Math.max(0,v+a*dt);s.x+=s.v*dt;s.a=(s.v-v)/dt;
-    if(s.shift<=0){const r=s.v/p.vRed[s.g];
+    let nv=Math.max(0,v+a*dt);if(a>0&&nv>p.vmax)nv=Math.max(v,p.vmax);
+    s.v=nv;s.x+=nv*dt;s.a=(nv-v)/dt;
+    if(s.shift<=0){const r=nv/p.vRed[s.g];
       if(r>=0.985&&s.g<top&&th>0){s.g++;s.shift=p.shiftT}else if(r<0.36&&s.g>0)s.g--;}
   }
   function runTo(p,tv){const s={v:0,x:0,g:0,shift:0};let t=0;while(s.v<tv&&t<80){simStep(s,p,1,0,DT);t+=DT}return t}
-  /* strip parameters from the instrument panel result; K is solved so a full-throttle run hits the panel's 0 to 100 time */
+  /* strip parameters from the instrument panel result; K is solved so a full-throttle run hits the panel's 0 to 100 time. vmax is the panel top speed: the lower of the power limit and the rev limit in top gear. */
   function params(v,r){
     const[cyl,rl,N]=EXTRA[v.id],bike=v.t==='bike',vG=r.topG/3.6,spread=bike?3.2:4.4;
     const p={bike,cyl,N,limit:rl*r.rev,idle:bike?1300:850,vtop:r.topP/3.6,cap:Math.max(bike?8.5:6.5,V100/r.acc*1.5),brakeA:4.5+5.5*r.br/100,shiftT:bike?0.12:0.2,K:50};
-    p.v3=Math.pow(p.vtop,3);p.vRed=Array.from({length:N},(_,i)=>vG*Math.pow(spread,-(N-1-i)/(N-1)));
-    const tv=Math.min(V100,0.95*Math.min(p.vtop,vG));let lo=0.5,hi=800;
+    p.v3=Math.pow(p.vtop,3);p.vRed=Array.from({length:N},(_,i)=>vG*Math.pow(spread,-(N-1-i)/(N-1)));p.vmax=Math.min(p.vtop,vG);p.gearLtd=vG<p.vtop;
+    const tv=Math.min(V100,0.95*p.vmax);let lo=0.5,hi=800;
     for(let i=0;i<34;i++){p.K=(lo+hi)/2;if(runTo(p,tv)>r.acc)lo=p.K;else hi=p.K}
     return p;
   }
@@ -1179,12 +1270,18 @@ const Game=(()=>{
     while(s.x<400&&t<120){simStep(s,p,1,0,DT);t+=DT;if(!o.t60&&s.v>=60/3.6)o.t60=t;if(!o.t100&&s.v>=V100)o.t100=t}
     o.t400=t;o.v400=s.v;return o}
   function stopDist(p,v0){const s={v:v0,x:0,g:p.N-1,shift:0};let t=0;while(s.v>0.05&&t<60){simStep(s,p,0,1,DT);t+=DT}return s.x}
+  /* milestones for one vehicle */
+  function rec(s,p,o,t){
+    if(!o.t60&&s.v>=60/3.6)o.t60=t;if(!o.t100&&s.v>=V100)o.t100=t;if(!o.t400&&s.x>=400){o.t400=t;o.v400=s.v}
+    if(s.v>(o.vmax||0))o.vmax=s.v;if(!o.tTop&&s.v>=p.vmax*0.998)o.tTop=t;
+  }
+  function stopRec(s,o){if(o.bx==null&&s.v<=V100)o.bx=s.x;if(s.v<0.05&&o.b100==null)o.b100=s.x-o.bx}
 
   function sync(v,b,r){
     const sg=v.id+JSON.stringify(b);if(sg===sig)return;sig=sg;veh=v;res=r;
     const sr=calc(v,stockBuild(v.t));P=params(v,r);PS=params(v,sr);ref=refRun(P);refS=refRun(PS);
     const open=Math.max(0,r.db-v.db);
-    P.snd={cyl:P.cyl,bike:P.bike,open,vol:0.1+0.5*clamp((r.db-70)/40,0,1),turbo:v.ind==='turbo'||b.boost==='kit',intake:['pod','cai'].includes(b.intake),pops:open>=12};
+    P.snd={cyl:P.cyl,bike:P.bike,open,vol:0.35+0.65*clamp((r.db-70)/40,0,1),turbo:v.ind==='turbo'||b.boost==='kit',intake:['pod','cai'].includes(b.intake),pops:open>=12};
     Snd.set(P.snd);
     const off=v.off?1:0;
     look0=P.bike?{exMod:false,exShort:false,ride:0,topbox:false}:{exMod:false,ride:off*5,R:19+off*3,wing:false,rack:false,tall:!!off};
@@ -1195,53 +1292,70 @@ const Game=(()=>{
     $('#gGauges').innerHTML=gaugeHTML(GDg[0],r.top,`panel top ${r.top.toFixed(0)}`,'live')+gaugeHTML(GDg[1],null,`limit ${Math.round(P.limit/100)*100} rpm`,'live');
     el.sn=$('#gGauges [data-k="gspd"] .needle');el.sv=$('#gGauges [data-k="gspd"] .val');el.rn=$('#gGauges [data-k="grpm"] .needle');el.rv=$('#gGauges [data-k="grpm"] .val');
     el.gDb.textContent=r.db.toFixed(0)+' dB';
-    $('#gTune').textContent=`Driving the ${v.mk} ${v.n} as built on the lift: ${r.power.toFixed(1)} bhp, ${r.torque.toFixed(1)} Nm, ${r.weight.toFixed(0)} kg, exhaust ${r.db.toFixed(0)} dB. The panel predicts 0 to 100 km/h in ${r.acc.toFixed(1)} s and ${r.top.toFixed(0)} km/h flat out. Fit a different part on the lift and the run changes with it.`;
-    reset(state==='off'?'off':'staged');
+    $('#gTune').textContent=`Driving the ${v.mk} ${v.n} as built on the lift: ${r.power.toFixed(1)} bhp, ${r.torque.toFixed(1)} Nm, ${r.weight.toFixed(0)} kg, exhaust ${r.db.toFixed(0)} dB. The panel predicts 0 to 100 km/h in ${r.acc.toFixed(1)} s and ${r.top.toFixed(0)} km/h flat out${P.gearLtd?', held there by the rev limiter in top gear':''}. Fit a different part on the lift and the run changes with it.`;
+    auto=false;reset(state==='off'?'off':'staged');
   }
   function reset(st){
-    state=st;pl={v:0,x:0,g:0,shift:0,a:0,rpm:P.idle,launched:false};gh={v:0,x:0,g:0,shift:0,a:0};m={};
+    state=st;asleep=false;lastActive=lastFrame=performance.now();pl={v:0,x:0,g:0,shift:0,a:0,rpm:P.idle,launched:false};gh={v:0,x:0,g:0,shift:0,a:0};m={};mg={};phase='flat';
     tRun=tCount=lights=acc=thr=brk=cut=popT=wa=pitch=0;parts=[];table();render();hud();
     if(st==='off')Snd.quiet(true);else{Snd.quiet(false);loop()}
   }
-  function loop(){if(!raf&&state!=='off'&&inView&&!document.hidden){last=performance.now();raf=requestAnimationFrame(frame)}}
+  function loop(){if(!raf&&state!=='off'&&!asleep&&inView&&!document.hidden){last=performance.now();raf=requestAnimationFrame(frame)}}
   function frame(now){
-    raf=0;const d=Math.min(0.1,(now-last)/1000);last=now;const tu=keys.up||pad.up?1:0,tb=keys.down||pad.down?1:0;
-    if(prevTu&&!tu&&pl.rpm>P.limit*0.5){if(P.snd.pops)popT=0.8;Snd.lift()}prevTu=tu;
-    acc+=d;while(acc>=DT){acc-=DT;tick(tu,tb)}
-    render();hud();Snd.update(pl.rpm,thr,P.limit,d,cut>0);
-    el.gThr.classList.toggle('on',!!tu);el.gBrake.classList.toggle('on',!!tb);
-    if(state!=='off'&&inView&&!document.hidden)raf=requestAnimationFrame(frame);else Snd.quiet(true);
+    raf=0;const d=Math.min(0.1,(now-last)/1000);last=now;
+    acc+=d;while(acc>=DT){acc-=DT;tick(keys.up||pad.up?1:0,keys.down||pad.down?1:0)}
+    /* an engine left idling switches itself off, so no sound keeps playing while you read the page */
+    lastFrame=now;if(!((state==='done'||state==='staged')&&thr<0.02&&brk<0.02))lastActive=now;
+    if(Snd.muted&&Snd.on&&!asleep)Snd.quiet(false);
+    const on=thr>0.5?1:0;if(prevTu&&!on&&pl.rpm>P.limit*0.5){if(P.snd.pops)popT=0.8;Snd.lift()}prevTu=on;
+    render();hud();Snd.update(pl.rpm,thr,P.limit,d,cut>0,pl.v);
+    el.gThr.classList.toggle('on',thr>0.5);el.gBrake.classList.toggle('on',brk>0.5);
+    if(state!=='off'&&!asleep&&inView&&!document.hidden)raf=requestAnimationFrame(frame);else Snd.quiet(true);
   }
   function tick(tu,tb){
+    /* in auto mode the pedals are worked for both vehicles: flat out, then brake */
+    if(auto&&(state==='count'||state==='run')){tu=state==='run'&&phase==='flat'?1:0;tb=state==='run'&&phase==='brake'?1:0}
     thr+=(tu-thr)*Math.min(1,DT*14);brk+=(tb-brk)*Math.min(1,DT*20);if(thr<.01)thr=0;if(brk<.01)brk=0;if(cut>0)cut-=DT;
-    if(state==='count'){tCount+=DT;lights=Math.min(3,1+Math.floor(tCount/0.8));if(tCount>=3.2){state='run';lights=4;tRun=0}}
+    if(state==='count'){
+      tCount+=DT;const n=Math.min(3,1+Math.floor(tCount/0.8));if(n!==lights){lights=n;if(!ff)Snd.beep(440,0.13)}
+      if(tCount>=3.2){state='run';lights=4;tRun=0;if(!ff)Snd.beep(880,0.5)}
+    }
     if(state==='run'){
       tRun+=DT;if(tRun>1.5)lights=0;
-      if(!pl.launched&&!m.react&&thr>0.05){pl.launched=true;m.react=tRun;table()}
-      if(pl.launched){
-        simStep(pl,P,thr,brk,DT);const t=m.t=tRun-m.react;
-        if(!m.t60&&pl.v>=60/3.6){m.t60=t;table()}
-        if(!m.t100&&pl.v>=V100){m.t100=t;table()}
-        if(!m.t400&&pl.x>=400){m.t400=t;m.v400=pl.v;table()}
-        if(pl.v>(m.vmax||0))m.vmax=pl.v;
-        if(pl.g===P.N-1&&pl.v>=P.vRed[pl.g]&&thr>0&&Math.random()<DT*14)cut=0.04;
-        if(m.t400){
-          if(thr>0.3)m.bf=null;else if(brk>0.3&&!m.bf)m.bf={x:pl.x,v:pl.v};
-          if(pl.v<0.05){if(m.bf){m.bd=pl.x-m.bf.x;m.bs=stopDist(PS,m.bf.v)}state='done';pl.launched=false;pl.a=0;table()}
+      const n=Object.keys(m).length+Object.keys(mg).length;
+      if(auto){
+        if(!pl.launched){pl.launched=true;m.react=0}
+        simStep(pl,P,thr,brk,DT);simStep(gh,PS,thr,brk,DT);m.t=tRun;rec(pl,P,m,tRun);rec(gh,PS,mg,tRun);
+        if(phase==='flat'&&((m.tTop&&mg.tTop&&tRun>Math.max(m.tTop,mg.tTop)+1.5)||tRun>90))phase='brake';
+        if(phase==='brake'){stopRec(pl,m);stopRec(gh,mg);if(pl.v<0.05&&gh.v<0.05){state='done';pl.launched=false;pl.a=0}}
+      }else{
+        if(!pl.launched&&m.react==null&&thr>0.05){pl.launched=true;m.react=tRun}
+        if(pl.launched){
+          simStep(pl,P,thr,brk,DT);m.t=tRun-m.react;rec(pl,P,m,m.t);
+          if(m.t400){
+            if(thr>0.3)m.bf=null;else if(brk>0.3&&!m.bf)m.bf={x:pl.x,v:pl.v};
+            if(pl.v<0.05){if(m.bf){m.bd=pl.x-m.bf.x;m.bs=stopDist(PS,m.bf.v)}state='done';pl.launched=false;pl.a=0}
+          }
         }
+        if(tRun>=0.3)simStep(gh,PS,1,0,DT);
       }
-      if(tRun>=0.3)simStep(gh,PS,1,0,DT);
+      if(!ff&&(state==='done'||Object.keys(m).length+Object.keys(mg).length!==n))table();
     }
     const lim=P.limit;
-    if(state==='run'&&pl.launched){let tg=Math.max(P.idle,lim*pl.v/P.vRed[pl.g]);if(pl.g===0&&thr>0)tg=Math.max(tg,lim*(0.28+0.22*thr));pl.rpm+=(tg-pl.rpm)*Math.min(1,DT*16)}
-    else{const tg=P.idle+thr*(lim*1.06-P.idle);pl.rpm+=(tg-pl.rpm)*DT*(tg>pl.rpm?5.5:3.2);if(pl.rpm>=lim){pl.rpm=lim-380;cut=0.07}}
+    if(state==='run'&&pl.launched){
+      let tg=Math.max(P.idle,lim*pl.v/P.vRed[pl.g]);if(pl.g===0&&thr>0)tg=Math.max(tg,lim*(0.28+0.22*thr));pl.rpm+=(tg-pl.rpm)*Math.min(1,DT*16);
+      if(P.gearLtd&&thr>0&&pl.v>=P.vmax*0.997&&Math.random()<DT*14)cut=0.04;
+    }else{const tg=P.idle+thr*(lim*1.06-P.idle);pl.rpm+=(tg-pl.rpm)*DT*(tg>pl.rpm?5.5:3.2);if(pl.rpm>=lim){pl.rpm=lim-380;cut=0.07}}
     const wt=P.bike&&pl.a>6.3?clamp((pl.a-6.3)*0.1,0,0.3):0;wa+=(wt-wa)*DT*6;pitch+=(clamp(-pl.a*0.0045,-0.05,0.05)-pitch)*DT*8;
+    if(ff)return;
     const tipX=pl.x-(P.bike?2:4.15),tipY=P.bike?17:12;
     if(Math.random()<DT*(6+34*thr))parts.push({x:tipX,y:tipY,vy:8+Math.random()*14,r:2+Math.random()*2.5,life:1,f:0});
     if(popT>0){popT-=DT;if(Math.random()<DT*10)parts.push({x:tipX-0.1,y:tipY,vy:0,r:5+Math.random()*4,life:1,f:1})}
     for(const q of parts){q.life-=DT*(q.f?9:2.4);q.y+=q.vy*DT;if(!q.f)q.x-=DT*1.2}
     if(parts.length>70||(parts[0]&&parts[0].life<=0))parts=parts.filter(q=>q.life>0);
   }
+  /* auto mode: jump straight to the end of the run */
+  function skip(){ff=true;let n=0;while((state==='count'||state==='run')&&n++<120*260)tick(0,0);ff=false;parts=[];table();render();hud()}
 
   /* ----- drawing ----- */
   const L=(...p)=>{c.beginPath();c.moveTo(p[0],p[1]);for(let i=2;i<p.length;i+=2)c.lineTo(p[i],p[i+1]);c.stroke()};
@@ -1311,46 +1425,384 @@ const Game=(()=>{
     if(lights){const bx=W/2-48;c.fillStyle='rgba(8,10,11,.88)';c.fillRect(bx,22,96,34);for(let i=0;i<3;i++){c.fillStyle=lights===4?'#4fd66a':i<lights?'#ff3b2a':'#2a2f33';c.beginPath();c.arc(bx+18+i*30,39,10,0,7);c.fill()}}
   }
   function hud(){
-    const kmh=pl.v*3.6,gap=pl.x-gh.x;
+    const kmh=pl.v*3.6,gap=pl.x-gh.x,going=state==='count'||state==='run';
     el.sn.style.transform=`rotate(${angOf(GDg[0],kmh).toFixed(1)}deg)`;el.sv.textContent=kmh.toFixed(0);
     el.rn.style.transform=`rotate(${angOf(GDg[1],pl.rpm/1000).toFixed(1)}deg)`;el.rv.textContent=(pl.rpm/1000).toFixed(1);
     el.gGear.textContent=pl.launched?pl.g+1:'N';el.gTime.textContent=(m.t||0).toFixed(2)+' s';el.gDist.textContent=pl.x.toFixed(0)+' m';
     el.gGap.textContent=(gap<0?'−':'+')+Math.abs(gap).toFixed(1)+' m';
-    const msg=state==='off'?'Press Start run, or press the throttle to start the engine and hear it':state==='staged'?'Engine running. Blip the throttle, then press Start run':state==='count'?'Staging. Rev it and wait for green':
-      state==='done'?'Run complete. Press Start run to go again':!m.react?'Green. Go':m.t400?'Past 400 m. Brake to a stop to finish, or hold it for top speed':'';
+    el.gLvl.style.width=Math.round(clamp(Snd.level()/0.3,0,1)*100)+'%';
+    const flat=state==='run'&&pl.launched&&thr>0.5&&pl.v>=P.vmax*0.997,
+      top=P.gearLtd?`On the rev limiter in top gear at ${kmh.toFixed(0)} km/h. Gearing is the limit here, not power`:`Flat out at ${kmh.toFixed(0)} km/h, the top speed on the panel`;
+    let msg;
+    if(asleep)msg=state==='done'?'Run complete. Results are below. Engine switched off':'Engine switched off. Press the throttle, Start run or Auto run';
+    else if(state==='off')msg='Press Start run to drive it yourself, or Auto run to watch both vehicles';
+    else if(state==='staged')msg='Engine running. Blip the throttle, then press Start run or Auto run';
+    else if(state==='count')msg=auto?'Auto run. Both vehicles launch on green':'Staging. Rev it and wait for green';
+    else if(state==='done')msg=auto?'Auto run complete. Results are below':'Run complete. Results are below';
+    else if(auto)msg=phase==='brake'?'Auto run. Both braking to a stop':flat?top:m.t400?'Auto run. Holding flat out until both reach top speed':'Auto run. Both flat out to the 400 m line';
+    else msg=m.react==null?'Green. Go':flat?top+'. Brake to a stop to finish':m.t400?'Past 400 m. Brake to a stop to finish, or hold it for top speed':'';
     if(el.gMsg.textContent!==msg)el.gMsg.textContent=msg;
-    const lb=state==='count'||state==='run'?'Restart run':'Start run';if(el.gStart.textContent!==lb)el.gStart.textContent=lb;
+    const lb=going&&!auto?'Restart run':'Start run',la=going&&auto?'Skip to results':'Auto run';
+    if(el.gStart.textContent!==lb)el.gStart.textContent=lb;if(el.gAuto.textContent!==la)el.gAuto.textContent=la;
   }
   function table(){
-    const f=x=>x==null?'–':x.toFixed(2)+' s',k=x=>(x*3.6).toFixed(0)+' km/h';
-    const rows=[['Reaction to green',f(m.react),'0.00 s','0.30 s'],['0 to 60 km/h',f(m.t60),f(ref.t60),f(refS.t60)],['0 to 100 km/h',f(m.t100),f(ref.t100),f(refS.t100)],
-      ['400 m',m.t400?`${f(m.t400)} at ${k(m.v400)}`:'–',`${f(ref.t400)} at ${k(ref.v400)}`,`${f(refS.t400)} at ${k(refS.v400)}`],
-      ['Top speed',m.vmax?k(m.vmax)+' reached':'–',res.top.toFixed(0)+' km/h',veh.top+' km/h'],
-      ['Braking to a stop',m.bd!=null?`${m.bd.toFixed(0)} m from ${k(m.bf.v)}`:'–','–',m.bs!=null?`${m.bs.toFixed(0)} m from ${k(m.bf.v)}`:'–']];
+    const f=x=>x==null?'–':x.toFixed(2)+' s',k=x=>x==null?'–':(x*3.6).toFixed(0)+' km/h',mt=x=>x==null?'–':x.toFixed(1)+' m';
+    const dif=(a,b,dec,unit,lo,hi)=>{if(a==null||b==null)return'–';const d=a-b;return Math.abs(d)<Math.pow(10,-dec)/2?'same':`${Math.abs(d).toFixed(dec)} ${unit} ${d<0?lo:hi}`};
+    const kv=x=>x==null?null:x*3.6;let head,rows,vd;
+    if(auto&&state!=='off'&&state!=='staged'){
+      const d400=dif(m.t400,mg.t400,2,'s','quicker','slower'),dTop=dif(kv(m.tTop&&m.vmax),kv(mg.tTop&&mg.vmax),0,'km/h','lower','higher'),dStop=dif(m.b100,mg.b100,1,'m','shorter','longer');
+      head=['Measure','Your build','Stock','Difference'];
+      rows=[['0 to 60 km/h',f(m.t60),f(mg.t60),dif(m.t60,mg.t60,2,'s','quicker','slower')],['0 to 100 km/h',f(m.t100),f(mg.t100),dif(m.t100,mg.t100,2,'s','quicker','slower')],
+        ['400 m time',f(m.t400),f(mg.t400),d400],['Speed at 400 m',k(m.v400),k(mg.v400),dif(kv(m.v400),kv(mg.v400),0,'km/h','lower','higher')],
+        ['Top speed',m.tTop?k(m.vmax):'–',mg.tTop?k(mg.vmax):'–',dTop],['Time to top speed',f(m.tTop),f(mg.tTop),dif(m.tTop,mg.tTop,1,'s','quicker','slower')],
+        ['Stopping from 100 km/h',mt(m.b100),mt(mg.b100),dStop],['Exhaust at full throttle',res.db.toFixed(0)+' dB',veh.db+' dB',dif(res.db,veh.db,0,'dB','quieter','louder')]];
+      vd=state!=='done'?`Auto run in progress: your ${veh.n} build against the stock one.`:[d400,dTop,dStop].every(x=>x==='same')?`This build performs the same as the stock ${veh.n}. Fit some parts on the lift and run it again.`
+        :`Against the stock ${veh.n}: 400 m ${d400}, top speed ${dTop}, stopping from 100 km/h ${dStop}.`;
+    }else{
+      head=['Measure','Your run','This build, perfect run','Stock, perfect run'];
+      rows=[['Reaction to green',f(m.react),'0.00 s','0.30 s'],['0 to 60 km/h',f(m.t60),f(ref.t60),f(refS.t60)],['0 to 100 km/h',f(m.t100),f(ref.t100),f(refS.t100)],
+        ['400 m',m.t400?`${f(m.t400)} at ${k(m.v400)}`:'–',`${f(ref.t400)} at ${k(ref.v400)}`,`${f(refS.t400)} at ${k(refS.v400)}`],
+        ['Top speed',m.vmax?k(m.vmax)+' reached':'–',res.top.toFixed(0)+' km/h',veh.top+' km/h'],
+        ['Braking to a stop',m.bd!=null?`${m.bd.toFixed(0)} m from ${k(m.bf.v)}`:'–','–',m.bs!=null?`${m.bs.toFixed(0)} m from ${k(m.bf.v)}`:'–']];
+      vd=`A perfect run on this build covers 400 m in ${ref.t400.toFixed(2)} s. The stock ${veh.n} takes ${refS.t400.toFixed(2)} s.`;
+      if(state==='done'&&m.t400){const d=0.3+refS.t400-(m.react+m.t400);vd=d>0?`You reached the 400 m line ${d.toFixed(2)} s before the stock ${veh.n}.`:`The stock ${veh.n} reached the 400 m line ${(-d).toFixed(2)} s before you.`}
+    }
+    $('#gHead').innerHTML=head.map(h=>`<th>${h}</th>`).join('');
     $('#gRes').innerHTML=rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join('');
-    let vd=`A perfect run on this build covers 400 m in ${ref.t400.toFixed(2)} s. The stock ${veh.n} takes ${refS.t400.toFixed(2)} s.`;
-    if(state==='done'&&m.t400){const d=0.3+refS.t400-(m.react+m.t400);vd=d>0?`You reached the 400 m line ${d.toFixed(2)} s before the stock ${veh.n}.`:`The stock ${veh.n} reached the 400 m line ${(-d).toFixed(2)} s before you.`}
     $('#gVerdict').textContent=vd;
   }
 
   /* ----- input ----- */
-  const engineOn=()=>{Snd.init();if(state==='off')reset('staged')};
-  el.gStart.addEventListener('click',()=>{Snd.init();reset('count');$('#game').focus({preventScroll:true})});
-  $('#gStop').addEventListener('click',()=>reset('off'));
-  $('#gMute').addEventListener('click',e=>{Snd.on=!Snd.on;e.currentTarget.textContent=Snd.on?'Sound on':'Sound off';e.currentTarget.setAttribute('aria-pressed',Snd.on);Snd.quiet(state==='off')});
+  const wake=()=>{if(asleep){asleep=false;lastActive=lastFrame=performance.now();Snd.quiet(false);loop()}};
+  /* watchdog on a plain timer. Frames can stop (hidden tab, covered window) while audio would carry on, so sound is cut unless the strip is actually animating, and an engine left idling switches itself off. */
+  setInterval(()=>{
+    if(state==='off'||asleep)return;const now=performance.now();
+    if((state==='done'||state==='staged')&&now-lastActive>(state==='done'?3000:8000)){asleep=true;Snd.quiet(true);hud()}
+    else if(now-lastFrame>600)Snd.quiet(true);
+  },300);
+  const engineOn=()=>{Snd.init();if(state==='off')reset('staged');else wake()};
+  const start=a=>{Snd.init();auto=a;reset('count');$('#game').focus({preventScroll:true});
+    setTimeout(()=>{const b=$('#gMute');if(!Snd.ctx)b.textContent='No sound in this browser';else if(Snd.ctx.state!=='running')b.textContent='Sound blocked by browser'},700)};
+  el.gStart.addEventListener('click',()=>start(false));
+  el.gAuto.addEventListener('click',()=>{if(auto&&(state==='count'||state==='run'))skip();else start(true)});
+  $('#gStop').addEventListener('click',()=>{auto=false;reset('off')});
+  $('#gMute').addEventListener('click',e=>{Snd.on=!Snd.on;e.currentTarget.textContent=Snd.on?'Sound on':'Sound off';e.currentTarget.setAttribute('aria-pressed',Snd.on);Snd.quiet(state==='off'||asleep)});
   [[el.gThr,'up'],[el.gBrake,'down']].forEach(([b,k])=>{
     b.addEventListener('pointerdown',e=>{e.preventDefault();try{b.setPointerCapture(e.pointerId)}catch(x){}engineOn();pad[k]=true});
     ['pointerup','pointercancel','lostpointercapture'].forEach(n=>b.addEventListener(n,()=>{pad[k]=false}));
     b.addEventListener('contextmenu',e=>e.preventDefault());
   });
-  addEventListener('keydown',e=>{const k=KEY[e.code];if(!k||state==='off'||!inView||(e.target instanceof Element&&e.target.closest('input,textarea,select')))return;e.preventDefault();keys[k]=true});
+  addEventListener('keydown',e=>{const k=KEY[e.code];if(!k||state==='off'||!inView||(e.target instanceof Element&&e.target.closest('input,textarea,select')))return;e.preventDefault();keys[k]=true;wake()});
   addEventListener('keyup',e=>{const k=KEY[e.code];if(!k)return;if(keys[k])e.preventDefault();keys[k]=false});
   addEventListener('blur',()=>{keys.up=keys.down=pad.up=pad.down=false});
-  new IntersectionObserver(es=>{inView=es[0].isIntersecting;if(inView&&state!=='off'){Snd.quiet(false);loop()}else if(!inView)Snd.quiet(true)},{threshold:0.15}).observe($('#game'));
-  document.addEventListener('visibilitychange',()=>{if(document.hidden)Snd.quiet(true);else if(inView&&state!=='off'){Snd.quiet(false);loop()}});
+  new IntersectionObserver(es=>{inView=es[0].isIntersecting;if(inView&&state!=='off'&&!asleep){Snd.quiet(false);loop()}else if(!inView)Snd.quiet(true)},{threshold:0.3}).observe($('.g-view'));
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)Snd.quiet(true);else if(inView&&state!=='off'&&!asleep){Snd.quiet(false);loop()}});
   new ResizeObserver(()=>{const r=cv.getBoundingClientRect();if(!r.width)return;W=r.width;H=r.height;const dpr=Math.min(2,devicePixelRatio||1);cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);ppm=clamp(W/12,36,74);if(P)render()}).observe(cv);
   /* step: advance the simulation by hand, for testing without the frame clock */
   return{sync,step(n,up,down){for(let i=0;i<n;i++)tick(up,down);render();hud()}};
+})();
+
+/* ---------- wind tunnel: outer body parts and the air around them ---------- */
+/* Figures are typical values for one generic car shape and one generic bike with rider. They compare parts with each other; they are not measurements of a particular vehicle. */
+const AERO={
+ car:{cd:0.32,cl:0.10,A:2.1,mods:[
+  {id:'lip',name:'Front lip and splitter',cd:-0.008,cl:-0.06,how:'A splitter sticks out below the bumper. Air piling up against the nose presses down on its top face, and less air gets under the car, where it would lift the front. Watch the lowest lines split around the nose and the lines under the car thin out.'},
+  {id:'wing',name:'Rear wing',cd:0.03,cl:-0.20,how:'A wing is an aircraft wing turned upside down. It throws the air upward, and the reaction pushes the rear tyres into the road. The price is drag: the upwash makes the wake taller, and a vortex spins off each wing tip.'},
+  {id:'diffuser',name:'Rear diffuser',cd:-0.015,cl:-0.09,how:'The floor ramps upward at the tail, giving the air under the car room to slow down and spread out smoothly. That lowers pressure under the body, which adds downforce, and it fills in the wake, which trims drag. Watch the lines leaving under the tail go from ragged to smooth.'},
+  {id:'low',name:'Lowered ride height',cd:-0.012,cl:-0.04,how:'Dropping the body narrows the gap to the road and lowers the roof. Less air goes under the car, and frontal area and lift both shrink a little.'},
+  {id:'box',name:'Roof rack and box',cd:0.09,cl:0.03,how:'A roof box adds frontal area exactly where the air is fastest. The flow breaks away behind it and the wake grows taller and messier, so drag climbs and top speed and mileage fall.'},
+  {id:'bar',name:'Bull bar',cd:0.035,cl:0.02,how:'A bull bar is a set of round tubes standing in clean air ahead of the nose. Each tube sheds its own turbulent wake, so the air reaches the body already disturbed and drag rises.'}]},
+ bike:{cda:0.66,share:0.55,mods:[
+  {id:'screen',name:'Touring screen',cda:-0.05,sh:0.62,how:'A screen lifts the air before it reaches your chest. The flow passes over your shoulders in one smooth sheet, so the drag area drops and the wind load on the rider falls sharply.'},
+  {id:'tuck',name:'Rider tucked in',cda:-0.13,sh:0.7,how:'The rider is the biggest thing in the wind on any bike. Folding down behind the clocks shrinks the frontal area and lets the air close up behind your back.'},
+  {id:'cowl',name:'Single-seat tail cowl',cda:-0.02,how:'A hump behind the rider fills the low-pressure pocket at your back, so the air leaves the bike in a tighter wake.'},
+  {id:'luggage',name:'Panniers and top box',cda:0.11,how:'Panniers and a top box make the tail wide and square. Air cannot follow the sharp corners, so it breaks away into a broad, churning wake that pulls the bike back.'},
+  {id:'guards',name:'Crash guards',cda:0.03,how:'Tubes sticking out beside the engine sit in fast air. They add frontal area and each one sheds turbulence along the side of the bike.'}]}
+};
+const Tunnel=(()=>{
+  const cvs=$('#tCanvas'),smooth=(a,b,x)=>{const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t)},n4=(a,b)=>Math.pow(a*a*a*a+b*b*b*b,.25);
+  /* cubic through irregular keys [[x,y],...] */
+  const spline=k=>s=>{let i=0;while(i<k.length-2&&s>k[i+1][0])i++;const a=k[i],b=k[i+1],h=b[0]-a[0],t=clamp((s-a[0])/h,0,1),
+    m=j=>{const p=k[Math.max(0,j-1)],n=k[Math.min(k.length-1,j+1)];return(n[1]-p[1])/(n[0]-p[0])},m0=m(i)*h,m1=m(i+1)*h,t2=t*t,t3=t2*t;
+    return(2*t3-3*t2+1)*a[1]+(t3-2*t2+t)*m0+(-2*t3+3*t2)*b[1]+(t3-t2)*m1};
+  /* car shape: deck height, floor height, half width and roof height along the length (0 = nose, 1 = tail). The same curves drive the 3D body and the airflow. */
+  const L=4.3,X0=-L/2,kT=spline([[0,.52],[.03,.62],[.10,.71],[.30,.86],[.45,.92],[.70,.95],[.88,.97],[.96,.92],[1,.80]]),kB=spline([[0,.34],[.06,.21],[.15,.17],[.80,.17],[.92,.22],[1,.36]]),
+    kW=spline([[0,.50],[.04,.74],[.12,.86],[.30,.90],[.60,.91],[.85,.87],[.96,.77],[1,.58]]),kR=spline([[.27,.84],[.34,1.08],[.42,1.30],[.50,1.38],[.60,1.37],[.70,1.25],[.78,1.08],[.84,.95]]);
+  let T3,ready=false,loading=false,type='car',vid=null,veh=null,lastB=null,cfg={},speed=120,inView=false,raf=0,last=0,clock=0,mixT=1,
+      renderer,scene,camera,M,inst=[],flow=null,U=null,GD=[],drag=null;
+  const cam={az:-.75,el:.2,r:10,taz:-.75,tel:.2,tr:10,tx:.6,ty:.8,zoom:1};
+
+  /* ----- numbers ----- */
+  function aero(c,kmh){
+    const A=AERO[type],v=kmh/3.6,q=0.6*v*v;
+    if(type==='car'){let cd=A.cd,cl=A.cl;A.mods.forEach(m=>{if(c[m.id]){cd+=m.cd;cl+=m.cl}});const F=q*A.A*cd;return{tcd:cd,tdf:F,tdn:-q*A.A*cl/9.81,tpw:F*v/745.7,ratio:cd/A.cd}}
+    let ca=A.cda,sh=A.share;A.mods.forEach(m=>{if(c[m.id]){ca+=m.cda;sh*=m.sh||1}});const F=q*ca;return{tcd:ca,tdf:F,tdn:F*sh/9.81,tpw:F*v/745.7,ratio:ca/A.cda};
+  }
+  const fromBuild=(v,b)=>v.t==='car'?{lip:b.body==='aero',wing:b.body==='aero',diffuser:b.body==='aero',low:['springs','coil'].includes(b.suspension),box:b.body==='armour',bar:b.body==='armour'}
+    :{screen:b.body==='tour',luggage:b.body==='tour',guards:b.body==='tour',cowl:b.body==='light',tuck:false};
+  function ui(rebuild){
+    const A=AERO[type],car=type==='car';
+    if(rebuild){
+      $('#tTitle').textContent=`Wind tunnel · ${car?'car':'motorcycle'}`;
+      GD=car?[{k:'tcd',label:'Drag coefficient',unit:'Cd',min:.2,max:.6,dec:2,better:-1},{k:'tdf',label:'Drag force',unit:'newtons',min:0,max:2000,dec:0,better:-1},{k:'tdn',label:'Downforce',unit:'kg, minus = lift',min:-60,max:180,dec:0,better:1},{k:'tpw',label:'Power to hold speed',unit:'bhp',min:0,max:160,dec:0,better:-1}]
+        :[{k:'tcd',label:'Drag area',unit:'CdA, m²',min:.2,max:1,dec:2,better:-1},{k:'tdf',label:'Drag force',unit:'newtons',min:0,max:1600,dec:0,better:-1},{k:'tdn',label:'Wind load on rider',unit:'kg',min:0,max:80,dec:0,better:-1},{k:'tpw',label:'Power to hold speed',unit:'bhp',min:0,max:120,dec:0,better:-1}];
+      $('#tGauges').innerHTML=GD.map(d=>gaugeHTML(d,d.min,'stock body')).join('');
+    }
+    $('#tMods').innerHTML=A.mods.map(m=>{const on=!!cfg[m.id],dv=car?m.cd:m.cda,chips=[`<span class="${dv<0?'up':'down'}">${dv<0?'−':'+'}${Math.abs(dv).toFixed(car?3:2)} ${car?'Cd':'m² drag area'}</span>`];
+      if(car&&m.cl)chips.push(`<span class="${m.cl<0?'up':'down'}">${m.cl<0?'more downforce':'more lift'}</span>`);if(m.sh)chips.push('<span class="up">less wind on the rider</span>');
+      return`<button class="tmod" type="button" data-m="${m.id}" aria-pressed="${on}"><span class="meta"><span>${on?'Fitted':'Not fitted'}</span></span><b>${m.name}</b><span class="fx">${chips.join('')}</span><p>${m.how}</p></button>`}).join('');
+    const now=aero(cfg,speed),st=aero({},speed);
+    GD.forEach(d=>{const e=$(`#tGauges [data-k="${d.k}"]`),val=now[d.k],s0=st[d.k],df=val-s0,small=Math.abs(df)<Math.pow(10,-d.dec)/2,dl=$('.delta',e);
+      $('.needle',e).style.transform=`rotate(${angOf(d,val).toFixed(1)}deg)`;$('.val',e).textContent=val.toFixed(d.dec);$('.ghost',e).setAttribute('transform',`rotate(${angOf(d,s0).toFixed(1)} 100 105)`);
+      dl.textContent=small?'stock body':`${df>0?'+':'−'}${Math.abs(df).toFixed(d.dec)} vs stock body`;dl.className='delta '+(small?'flat':df*d.better>0?'up':'down')});
+    $('#tSpeedV').textContent=speed+' km/h';
+    const dTop=veh?veh.top*(Math.cbrt(1/now.ratio)-1):0,top=Math.abs(dTop)<0.5?'no change in top speed':`about ${Math.abs(dTop).toFixed(0)} km/h ${dTop>0?'more':'less'} top speed`;
+    $('#tSum').textContent=car?`At ${speed} km/h this body makes ${now.tdf.toFixed(0)} N of drag and ${Math.abs(now.tdn).toFixed(0)} kg of ${now.tdn>=0?'downforce':'lift'}. On the ${veh?veh.n:'car'} that drag change is worth ${top}. The 3D model is one generic car shape, not the ${veh?veh.n:'car'} itself.`
+      :`At ${speed} km/h this bike and rider make ${now.tdf.toFixed(0)} N of drag, with ${now.tdn.toFixed(0)} kg of it pushing on the rider. On the ${veh?veh.n:'bike'} that drag change is worth ${top}. The 3D model is one generic bike shape, not the ${veh?veh.n:'bike'} itself.`;
+  }
+
+  /* ----- 3D models, built from geometry ----- */
+  const sp=(c,n)=>Math.sign(c)*Math.pow(Math.abs(c),2/n);
+  function mesh(g,m,x,y,z){const o=new T3.Mesh(g,m);if(x!=null)o.position.set(x,y,z);return o}
+  const bx=(w,h,d,m,x,y,z)=>mesh(new T3.BoxGeometry(w,h,d),m,x,y,z),
+    el=(rx,ry,rz,m,x,y,z)=>{const o=mesh(new T3.SphereGeometry(1,28,18),m,x,y,z);o.scale.set(rx,ry,rz);return o};
+  function tube(a,b,r,m,cap){
+    const A=new T3.Vector3(a[0],a[1],a[2]),B=new T3.Vector3(b[0],b[1],b[2]),d=B.clone().sub(A),g=new T3.Group(),c=mesh(new T3.CylinderGeometry(r,r,d.length(),14),m);
+    c.position.copy(A).add(B).multiplyScalar(.5);c.quaternion.setFromUnitVectors(new T3.Vector3(0,1,0),d.normalize());g.add(c);
+    if(cap)[A,B].forEach(p=>{const s=mesh(new T3.SphereGeometry(r,14,10),m);s.position.copy(p);g.add(s)});return g;
+  }
+  function wheel(R,wd,bike){
+    const g=new T3.Group(),s=new T3.Group();g.add(s);g.userData.spin=s;
+    if(bike){
+      s.add(mesh(new T3.TorusGeometry(R-.055,.055,14,44),M.tyre));s.add(mesh(new T3.TorusGeometry(R-.115,.014,8,44),M.rim));
+      for(let i=0;i<9;i++){const k=mesh(new T3.CylinderGeometry(.006,.006,(R-.115)*2,6),M.rim);k.rotation.z=i*Math.PI/9;s.add(k)}
+      const hub=mesh(new T3.CylinderGeometry(.045,.045,.12,16),M.dark);hub.rotation.x=Math.PI/2;s.add(hub);
+      const disc=mesh(new T3.CylinderGeometry(.14,.14,.008,28),M.rim,0,0,.05);disc.rotation.x=Math.PI/2;s.add(disc);
+    }else{
+      const pr=[[R-.1,-wd/2],[R-.02,-wd/2],[R,-wd/2+.035],[R,wd/2-.035],[R-.02,wd/2],[R-.1,wd/2]].map(p=>new T3.Vector2(p[0],p[1]));
+      const t=mesh(new T3.LatheGeometry(pr,44),M.tyre);t.rotation.x=Math.PI/2;s.add(t);
+      const barrel=mesh(new T3.CylinderGeometry(R-.1,R-.1,wd*.9,32,1,true),M.dark);barrel.rotation.x=Math.PI/2;s.add(barrel);
+      const back=mesh(new T3.CylinderGeometry(R-.1,R-.1,.03,32),M.dark);back.rotation.x=Math.PI/2;s.add(back);
+      for(const sd of[-1,1]){const zf=sd*(wd/2-.03),len=R-.1;
+        for(let i=0;i<5;i++){const a=i*Math.PI*2/5,k=bx(.05,len,.02,M.rim,-Math.sin(a)*len/2,Math.cos(a)*len/2,zf);k.rotation.z=a;s.add(k)}
+        const cap=mesh(new T3.CylinderGeometry(.06,.06,.03,20),M.rim,0,0,zf);cap.rotation.x=Math.PI/2;s.add(cap);s.add(mesh(new T3.TorusGeometry(R-.105,.012,8,44),M.rim,0,0,zf));}
+    }
+    return g;
+  }
+  /* a part that can be fitted and removed: scales in around its own anchor point */
+  function part(I,parent,id,ax,ay,az,kids){const g=new T3.Group();g.position.set(ax,ay,az);kids.forEach(k=>{k.position.x-=ax;k.position.y-=ay;k.position.z-=az;g.add(k)});g.userData.s=0;g.visible=false;parent.add(g);I.parts[id]=g}
+  function car(){
+    const I={group:new T3.Group(),parts:{},wheels:[]},body=I.body=new T3.Group();I.group.add(body);
+    /* body: rings of a rounded box swept along the length, with the wheel arches pressed in and darkened */
+    {const NS=110,MM=56,pos=[],col=[],idx=[],WX=[-1.30,1.28],RA=.40;
+      for(let i=0;i<=NS;i++){const s=i/NS,x=X0+s*L,yT=kT(s),yB=kB(s),w=kW(s),yc=(yT+yB)/2,h=(yT-yB)/2;
+        let arch=0;for(const xw of WX){const d=Math.abs(x-xw);if(d<RA)arch=Math.max(arch,.33+Math.sqrt(RA*RA-d*d))}
+        for(let j=0;j<=MM;j++){const th=j/MM*2*Math.PI;let z=w*sp(Math.sin(th),3.6),y=yc-h*sp(Math.cos(th),3.6),c=1;const tt=(y-yB)/(yT-yB);z*=1-.1*tt*tt;
+          if(arch&&y<arch&&Math.abs(z)>w*.6){z=Math.sign(z)*Math.min(Math.abs(z),w-.26);c=.02}
+          pos.push(x,y,z);col.push(c,c,c)}}
+      for(let i=0;i<NS;i++)for(let j=0;j<MM;j++){const a=i*(MM+1)+j,b=a+1,c=a+MM+1,d=c+1;idx.push(a,c,b,b,c,d)}
+      for(const e of[0,NS]){const s=e/NS,ci=pos.length/3;pos.push(X0+s*L,(kT(s)+kB(s))/2,0);col.push(1,1,1);for(let j=0;j<MM;j++){const a=e*(MM+1)+j;idx.push(ci,a,a+1)}}
+      const g=new T3.BufferGeometry();g.setAttribute('position',new T3.Float32BufferAttribute(pos,3));g.setAttribute('color',new T3.Float32BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();body.add(mesh(g,M.paintV));}
+    /* cabin: a glass canopy with a painted roof panel */
+    {const G0=.27,G1=.84,NG=64,MG=28,pos=[],gl=[],rf=[];
+      for(let i=0;i<=NG;i++){const s=G0+(G1-G0)*i/NG,yb=kT(s)-.03,yr=Math.max(yb+.002,kR(s)),wg=kW(s)*.9;
+        for(let j=0;j<=MG;j++){const th=j/MG*Math.PI,sn=Math.sin(th);pos.push(X0+s*L,yb+(yr-yb)*Math.pow(sn,2/2.6),wg*sp(Math.cos(th),2.6)*(1-.2*sn*sn))}}
+      for(let i=0;i<NG;i++)for(let j=0;j<MG;j++){const a=i*(MG+1)+j,b=a+1,c=a+MG+1,d=c+1,s=G0+(G1-G0)*(i+.5)/NG,u=(j+.5)/MG;(s>.43&&s<.67&&u>.3&&u<.7?rf:gl).push(a,c,b,b,c,d)}
+      const g=new T3.BufferGeometry();g.setAttribute('position',new T3.Float32BufferAttribute(pos,3));g.setIndex(gl.concat(rf));g.addGroup(0,gl.length,0);g.addGroup(gl.length,rf.length,1);g.computeVertexNormals();body.add(mesh(g,[M.glass,M.paint]));}
+    for(const z of[-1,1]){const h=bx(.07,.06,.34,M.lamp,X0+.09,.6,z*.47);h.rotation.y=-z*.5;body.add(h)}
+    body.add(bx(.05,.05,1.34,M.tail,X0+L-.015,.87,0));
+    for(const x of[-1.30,1.28])for(const z of[-1,1]){const w=wheel(.33,.22,false);w.position.set(x,.33,z*.80);I.group.add(w);I.wheels.push(w.userData.spin)}
+    /* parts */
+    const lip=mesh(new T3.CylinderGeometry(.80,.80,.03,48),M.add,-1.86,.175,0);lip.scale.x=.46;part(I,body,'lip',-1.86,.175,0,[lip]);
+    const wg=bx(.34,.028,1.52,M.add,1.90,1.23,0);wg.rotation.z=.2;part(I,body,'wing',1.90,1.0,0,[wg,bx(.38,.22,.02,M.add,1.90,1.22,.77),bx(.38,.22,.02,M.add,1.90,1.22,-.77),bx(.05,.28,.03,M.add,1.88,1.08,.45),bx(.05,.28,.03,M.add,1.88,1.08,-.45)]);
+    const ramp=bx(.56,.016,1.24,M.add,1.86,.27,0);ramp.rotation.z=.26;part(I,body,'diffuser',1.86,.25,0,[ramp].concat([-.5,-.25,0,.25,.5].map(z=>{const f=bx(.5,.13,.016,M.add,1.88,.24,z);f.rotation.z=.26;return f})));
+    part(I,body,'box',.15,1.42,0,[tube([-.25,1.43,-.62],[-.25,1.43,.62],.02,M.add),tube([.55,1.42,-.62],[.55,1.42,.62],.02,M.add),el(1.0,.17,.38,M.add,.15,1.61,0)]);
+    part(I,body,'bar',-2.2,.5,0,[tube([-2.22,.45,-.66],[-2.22,.45,.66],.028,M.add,true),tube([-2.22,.72,-.66],[-2.22,.72,.66],.028,M.add,true),tube([-2.22,.3,-.34],[-2.22,.8,-.34],.025,M.add,true),tube([-2.22,.3,.34],[-2.22,.8,.34],.025,M.add,true),
+      tube([-2.22,.72,.66],[-1.96,.64,.82],.025,M.add,true),tube([-2.22,.72,-.66],[-1.96,.64,-.82],.025,M.add,true),tube([-2.22,.45,.66],[-1.98,.42,.8],.025,M.add,true),tube([-2.22,.45,-.66],[-1.98,.42,-.8],.025,M.add,true)]);
+    return I;
+  }
+  function rider(tk){
+    const g=new T3.Group(),hip=[.24,.98,0],sh=tk?[-.16,1.24,0]:[.04,1.48,0],hd=tk?[-.31,1.33,0]:[.0,1.68,0];
+    g.add(tube(hip,sh,.15,M.rider,true));const h=mesh(new T3.SphereGeometry(.125,24,18),M.helmet,hd[0],hd[1],hd[2]);h.scale.x=1.12;g.add(h);g.add(el(.06,.045,.1,M.glass,hd[0]-.1,hd[1]-.005,0));
+    for(const z of[-1,1]){const s=[sh[0],sh[1]-.03,z*.19],eb=tk?[-.30,1.10,z*.30]:[-.14,1.22,z*.30],hn=[-.40,1.09,z*.33],kn=[-.10,.80,z*.20],ft=[.14,.40,z*.22];
+      g.add(tube(s,eb,.05,M.rider,true));g.add(tube(eb,hn,.045,M.rider,true));g.add(tube([hip[0],hip[1]-.04,z*.11],kn,.075,M.rider,true));g.add(tube(kn,ft,.06,M.rider,true));g.add(bx(.2,.07,.09,M.dark,.08,.36,z*.22))}
+    return g;
+  }
+  function bike(){
+    const I={group:new T3.Group(),parts:{},wheels:[]},body=I.body=new T3.Group(),add=o=>{body.add(o);return o};I.group.add(body);
+    for(const x of[-.72,.72]){const w=wheel(.32,.11,true);w.position.set(x,.32,0);I.group.add(w);I.wheels.push(w.userData.spin)}
+    const HD=[-.44,.98,0],SF=[.06,.86,0],PV=[.16,.42,0],CR=[-.24,.30,0],SR=[.66,.86,0];
+    [[HD,SF,.028],[HD,CR,.026],[CR,PV,.026],[PV,SF,.026],[SF,SR,.022]].forEach(t=>add(tube(t[0],t[1],t[2],M.dark,true)));
+    for(const z of[-.1,.1]){add(tube([.16,.42,z],[.72,.32,z],.024,M.dark,true));add(tube([.50,.82,z*1.3],[.62,.40,z*1.3],.022,M.chrome,true));add(tube([-.44,1.0,z*.9],[-.72,.32,z*.9],.026,M.chrome,true))}
+    add(tube([-.40,1.08,-.36],[-.40,1.08,.36],.014,M.dark,true));add(el(.1,.1,.09,M.lamp,-.56,.94,0));
+    add(bx(.36,.30,.30,M.dark,-.03,.47,0));add(bx(.20,.20,.22,M.eng,-.06,.70,0));for(let i=0;i<5;i++)add(bx(.24,.012,.26,M.eng,-.06,.63+i*.035,0));
+    add(el(.30,.125,.17,M.paint,-.16,.98,0));add(bx(.30,.07,.26,M.seat,.20,.90,0));I.pillion=add(bx(.26,.06,.24,M.seat,.50,.90,0));
+    const rg=mesh(new T3.TorusGeometry(.38,.02,8,24,Math.PI*.6),M.paint,.72,.32,0);rg.rotation.z=.25;rg.scale.z=3.4;add(rg);
+    const fg=mesh(new T3.TorusGeometry(.38,.02,8,24,Math.PI*.42),M.paint,-.72,.32,0);fg.rotation.z=1.0;fg.scale.z=3.2;add(fg);
+    add(tube([-.16,.55,.14],[-.22,.30,.17],.025,M.chrome,true));add(tube([-.22,.30,.17],[.22,.30,.20],.025,M.chrome,true));add(tube([.22,.32,.21],[.86,.40,.22],.055,M.chrome,true));
+    add(bx(.04,.05,.12,M.tail,.80,.84,0));
+    I.up=add(rider(false));I.tk=add(rider(true));I.tk.visible=false;
+    const scr=mesh(new T3.SphereGeometry(.42,28,14,-.62,1.24,.52,.74),M.screen,-.22,.98,0);part(I,body,'screen',-.5,1.1,0,[scr]);
+    part(I,body,'luggage',.6,.8,0,[bx(.5,.34,.2,M.add,.56,.62,.30),bx(.5,.34,.2,M.add,.56,.62,-.30),bx(.36,.28,.40,M.add,.80,1.08,0),tube([.5,.92,0],[.9,.93,0],.016,M.dark,true)]);
+    part(I,body,'guards',-.28,.46,0,[-1,1].flatMap(z=>[tube([-.24,.62,z*.14],[-.36,.46,z*.31],.016,M.add,true),tube([-.36,.46,z*.31],[-.22,.30,z*.18],.016,M.add,true)]));
+    part(I,body,'cowl',.52,.93,0,[el(.22,.10,.13,M.add,.52,.95,0)]);
+    return I;
+  }
+
+  /* ----- airflow -----
+     Each streamline starts on a grid upstream and is pushed outward so it clears the body's outline at every station along the length.
+     A line that starts at distance r0 from the centre line passes at sqrt(r0² + 1) body radii, so air near the body hugs the surface
+     and air further out is displaced less. Speed and turbulence are estimated from the surface slope and the wake behind the tail. */
+  function profile(){
+    const c=cfg,a=aero(c,speed);
+    if(type==='car'){
+      const ride=c.low?-.05:0,xn=X0,xt=X0+L,cd=a.tcd,Lw=1.6+(cd-.28)*9;
+      const Hr=x=>{const s=(x-X0)/L;let h=kT(s);if(s>.27&&s<.84)h=Math.max(h,kR(s));h+=ride;if(c.box){const u=(x-.15)/.95;if(Math.abs(u)<1)h=Math.max(h,1.42+ride+.36*Math.pow(1-u*u,.35))}if(c.wing){const u=(x-1.9)/.24;if(Math.abs(u)<1)h=Math.max(h,1.24+ride)}return h+.05},
+        Wr=x=>{const s=(x-X0)/L;return kW(s)+.06+(c.bar&&s<.1?.06:0)};
+      return{x0:-5,x1:7,xt,soft:.24,Hm:1.45,Wm:.95,ys:[.22,.42,.64,.88,1.14,1.42,1.74,2.1],zs:[-1.7,-1.25,-.85,-.5,-.22,0,.22,.5,.85,1.25,1.7],hw:.045,amp:.05+(cd-.26)*.9,
+        H:x=>x<xn?Hr(xn)*smooth(xn-1.1,xn,x):x>xt?Hr(xt)*(1-smooth(xt,xt+Lw,x)):Hr(x),W:x=>x<xn?Wr(xn)*smooth(xn-1.1,xn,x):x>xt?Wr(xt)*(1-smooth(xt,xt+Lw*1.3,x)):Wr(x),
+        up:(x,y,z)=>c.wing?.3*smooth(1.7,2.4,x)*(1-.5*smooth(2.4,7,x))*Math.exp(-Math.pow((y-1.35)/.5,2))*(Math.abs(z)<.9?1:Math.exp(-Math.pow((Math.abs(z)-.9)/.25,2))):0,
+        tb:(x,rw)=>(c.box?.07*smooth(.9,1.6,x)*Math.exp(-rw):0)+(c.bar?.035*smooth(xn-.2,xn+.5,x)*Math.exp(-rw):0),
+        extra:(N,mk)=>{const out=[];
+          /* air under the floor */
+          for(const z0 of[-.5,-.25,0,.25,.5]){const ln=[];for(let i=0;i<=N;i++){const x=-5+12*i/N,ex=smooth(xt-.3,xt+.9,x);
+            ln.push(mk(x,.09+ride*.6+ex*(c.diffuser?.24:.14),z0*(1+.2*ex),c.low?1.35:1.2-(c.diffuser?0:.5*ex),c.diffuser?.012*ex:.1*ex,(c.lip?.4:.95)*smooth(-4.6,-3.8,x),.04))}out.push(ln)}
+          /* wing tip vortices */
+          for(const sd of[-1,1]){const ln=[];for(let i=0;i<=N;i++){const u=i/N,x=1.95+u*4.8,r=.03+.13*u,an=u*9*2*Math.PI*sd;
+            ln.push(mk(x,1.3+ride+.28*Math.sqrt(u)+r*Math.cos(an),sd*.77+r*Math.sin(an),1.3,.004,c.wing?.9*(1-u*.6):0,.028))}out.push(ln)}
+          return out}};
+    }
+    const up=!c.tuck,ca=a.tcd,Lw=1.3+(ca-.5)*5,xn=-1.05,xt=1.05,
+      base=spline([[-1.05,.25],[-.9,.64],[-.6,1.0],[-.4,1.1],[0,1.02],[.6,.95],[1.0,.66],[1.05,.3]]),
+      rid=up?spline([[-.22,1.0],[-.04,1.6],[.06,1.84],[.26,1.6],[.44,1.05]]):spline([[-.48,1.0],[-.3,1.42],[-.1,1.44],[.26,1.26],[.46,1.0]]),
+      scr=spline([[-.66,1.0],[-.52,1.3],[-.44,1.38],[-.2,1.34],[-.05,1.25]]),wb=spline([[-1.05,.06],[-.8,.1],[-.42,.40],[-.2,.36],[.2,.32],[.6,.22],[1.05,.1]]),r0=up?-.22:-.48,r1=up?.44:.46;
+    const Hr=x=>{let h=base(x);if(x>r0&&x<r1)h=Math.max(h,rid(x));if(c.screen&&x>-.66&&x<-.05)h=Math.max(h,scr(x));if(c.luggage&&x>.4)h=Math.max(h,1.24);if(c.cowl&&x>.3&&x<.75)h=Math.max(h,1.06);return h+.05},
+      Wr=x=>{let w=wb(x);if(c.guards&&x>-.45&&x<.0)w+=.07;if(c.luggage&&x>.3)w=Math.max(w,.46);return w+.05};
+    return{x0:-3.6,x1:5.6,xt,soft:.26,Hm:1.8,Wm:.42,ys:[.25,.5,.75,1.0,1.25,1.5,1.78,2.1],zs:[-1.15,-.75,-.45,-.22,0,.22,.45,.75,1.15],hw:.035,amp:.07+(ca-.45)*.45,
+      H:x=>x<xn?Hr(xn)*smooth(xn-.8,xn,x):x>xt?Hr(xt)*(1-smooth(xt,xt+Lw,x)):Hr(x),W:x=>x<xn?Wr(xn)*smooth(xn-.8,xn,x):x>xt?Wr(xt)*(1-smooth(xt,xt+Lw*1.3,x)):Wr(x),
+      up:()=>0,tb:(x,rw)=>(!c.screen&&up?.045*smooth(-.1,.5,x)*Math.exp(-rw*1.2):0)+(c.luggage?.05*smooth(.9,1.5,x)*Math.exp(-rw):0)+(c.guards?.02*smooth(-.4,.1,x)*Math.exp(-rw):0),extra:()=>[]};
+  }
+  /* widen then blur an outline along the length: the result is smooth and never dips inside the body */
+  function soft(fn,x0,x1,r){
+    const dx=.02,n=Math.ceil((x1-x0)/dx)+1,k=Math.round(r/dx),raw=new Float32Array(n),dil=new Float32Array(n),out=new Float32Array(n);
+    for(let i=0;i<n;i++)raw[i]=fn(x0+i*dx);
+    for(let i=0;i<n;i++){let m=0;for(let j=Math.max(0,i-k);j<=Math.min(n-1,i+k);j++)if(raw[j]>m)m=raw[j];dil[i]=m}
+    for(let i=0;i<n;i++){let s=0,c=0;for(let j=Math.max(0,i-k);j<=Math.min(n-1,i+k);j++){s+=dil[j];c++}out[i]=s/c}
+    return x=>{const u=clamp((x-x0)/dx,0,n-1),i=Math.floor(u),f=u-i;return out[i]*(1-f)+out[Math.min(n-1,i+1)]*f};
+  }
+  function flowLines(pf){
+    pf.H=soft(pf.H,pf.x0,pf.x1,pf.soft);pf.W=soft(pf.W,pf.x0,pf.x1,pf.soft);
+    const N=150,lines=[],mk=(x,y,z,sf,tb,al,hw)=>({p:[x,y,z],sf,tb,al,hw,T:0});let Hmax=0;for(let x=pf.x0;x<pf.x1;x+=.05)Hmax=Math.max(Hmax,pf.H(x));
+    for(const y0 of pf.ys)for(const z0 of pf.zs){
+      const ln=[],rw=n4(y0/pf.Hm,z0/pf.Wm),az=Math.abs(z0),hw=pf.hw*(az<.01?2.1:az<.3?1.2:.75),al=az<.01?1:az<.3?.6:.26;
+      for(let i=0;i<=N;i++){const x=pf.x0+(pf.x1-pf.x0)*i/N,H=pf.H(x),W=pf.W(x);let y=y0,z=z0,rho=9;
+        if(H>.01&&W>.01){const r0=n4(y0/H,z0/W);rho=Math.sqrt(r0*r0+1);y=y0*rho/r0;z=z0*rho/r0}
+        y+=pf.up(x,y,z);
+        const near=Math.exp(-(rho-1)*2.2),dH=(pf.H(x+.05)-pf.H(x-.05))/.1,wk=smooth(pf.xt,pf.xt+.7,x);
+        ln.push(mk(x,y,z,clamp(1+near*(.5*Math.pow(H/Hmax,2)-.6*clamp(dH,0,1.2))-wk*.55*Math.exp(-rw*.9),.3,1.5),(pf.amp*wk*Math.exp(-rw*1.1)*(.6+.4*smooth(pf.xt,pf.x1,x))+pf.tb(x,rw))*.8,al,hw))}
+      lines.push(ln)}
+    pf.extra(N,mk).forEach(l=>lines.push(l));
+    lines.forEach(ln=>{let T=0;for(let i=1;i<ln.length;i++){const a=ln[i-1].p,b=ln[i].p;T+=Math.hypot(b[0]-a[0],b[1]-a[1],b[2]-a[2])/ln[i].sf;ln[i].T=T}});
+    return lines;
+  }
+  /* each streamline becomes two crossed ribbons so it reads from any angle */
+  function ribbons(lines){
+    const n=lines[0].length,nv=lines.length*n*4,pos=new Float32Array(nv*3),f=new Float32Array(nv*4);let k=0;
+    for(const ln of lines)for(let o=0;o<2;o++)for(let i=0;i<n;i++){const q=ln[i];for(const sd of[-1,1]){pos[k*3]=q.p[0];pos[k*3+1]=q.p[1]+(o?sd*q.hw:0);pos[k*3+2]=q.p[2]+(o?0:sd*q.hw);f[k*4]=q.sf;f[k*4+1]=q.tb;f[k*4+2]=q.T;f[k*4+3]=q.al;k++}}
+    return{pos,f,nl:lines.length,n};
+  }
+  function flowTo(){
+    const pf=profile(),d=ribbons(flowLines(pf));U.uX0.value=pf.x0;U.uX1.value=pf.x1;
+    if(flow&&flow.userData.key===type+d.nl){const g=flow.geometry,A=g.attributes;A.position.array.set(A.posB.array);A.fA.array.set(A.fB.array);A.posB.array.set(d.pos);A.fB.array.set(d.f);['position','posB','fA','fB'].forEach(k=>A[k].needsUpdate=true);mixT=0;return}
+    if(flow){scene.remove(flow,flow.userData.mirror);flow.geometry.dispose()}
+    const g=new T3.BufferGeometry(),nv=d.nl*d.n*4,seed=new Float32Array(nv),side=new Float32Array(nv),idx=[];
+    for(let l=0;l<d.nl;l++){const sv=Math.random();for(let o=0;o<2;o++){const base=(l*2+o)*d.n*2;for(let i=0;i<d.n;i++){seed[base+i*2]=seed[base+i*2+1]=sv;side[base+i*2]=-1;side[base+i*2+1]=1;if(i<d.n-1){const a=base+i*2;idx.push(a,a+1,a+2,a+1,a+3,a+2)}}}}
+    g.setAttribute('position',new T3.BufferAttribute(d.pos.slice(),3));g.setAttribute('posB',new T3.BufferAttribute(d.pos,3));g.setAttribute('fA',new T3.BufferAttribute(d.f.slice(),4));g.setAttribute('fB',new T3.BufferAttribute(d.f,4));
+    g.setAttribute('seed',new T3.BufferAttribute(seed,1));g.setAttribute('side',new T3.BufferAttribute(side,1));g.setIndex(idx);
+    const mat=new T3.ShaderMaterial({uniforms:U,transparent:true,depthWrite:false,blending:T3.AdditiveBlending,side:T3.DoubleSide,
+      vertexShader:`attribute vec3 posB;attribute vec4 fA;attribute vec4 fB;attribute float seed;attribute float side;uniform float uMix,uTime,uSpeed;varying float vSf,vTb,vT,vSide,vSeed,vX,vAl;
+        void main(){vec3 p=mix(position,posB,uMix);vec4 f=mix(fA,fB,uMix);float ph=seed*37.0,T=f.z,w=uTime*uSpeed;
+          p.y+=f.y*(sin(T*2.6-w*3.0+ph)*.65+sin(T*5.3-w*4.6+ph*1.7)*.35);p.z+=f.y*(cos(T*2.2-w*2.7+ph*2.3)*.65+cos(T*4.7-w*4.1+ph*.6)*.35);p.y=max(p.y,.015);
+          vSf=f.x;vTb=f.y;vT=T;vSide=side;vSeed=seed;vX=p.x;vAl=f.w;gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.0);}`,
+      fragmentShader:`uniform float uTime,uSpeed,uX0,uX1;varying float vSf,vTb,vT,vSide,vSeed,vX,vAl;
+        void main(){float e=1.0-abs(vSide);float core=pow(e,5.0)*.85+pow(e,1.4)*.3;
+          float pulse=.6+.4*sin(vT*3.2-uTime*uSpeed*3.4+vSeed*20.0);
+          float fade=smoothstep(uX0,uX0+1.3,vX)*(1.0-smoothstep(uX1-1.8,uX1,vX));
+          float s=clamp((vSf-.3)/1.2,0.,1.);vec3 col=s<.58?mix(vec3(.04,.14,1.),vec3(.09,.5,1.),s/.58):mix(vec3(.09,.5,1.),vec3(.78,.96,1.),(s-.58)/.42);
+          float a=core*pulse*fade*vAl*(.8-.38*clamp(vTb*5.,0.,1.));gl_FragColor=vec4(col*a,a);}`});
+    flow=new T3.Mesh(g,mat);flow.frustumCulled=false;flow.renderOrder=2;flow.userData.key=type+d.nl;
+    const mr=flow.userData.mirror=new T3.Mesh(g,mat);mr.scale.y=-1;mr.frustumCulled=false;mr.renderOrder=-2;scene.add(flow,mr);mixT=1;
+  }
+
+  /* ----- scene ----- */
+  function init(){
+    renderer=new T3.WebGLRenderer({canvas:cvs,antialias:true});renderer.setPixelRatio(Math.min(2,devicePixelRatio||1));renderer.outputEncoding=T3.sRGBEncoding;renderer.toneMapping=T3.ACESFilmicToneMapping;renderer.toneMappingExposure=1.0;
+    scene=new T3.Scene();scene.background=new T3.Color(0x020308);scene.fog=new T3.Fog(0x020308,16,40);camera=new T3.PerspectiveCamera(32,2,.1,80);
+    /* reflections: a dark hall with rows of tube lights and a blue glow at the horizon */
+    const ec=document.createElement('canvas');ec.width=512;ec.height=256;const eg=ec.getContext('2d');eg.fillStyle='#020308';eg.fillRect(0,0,512,256);
+    const gr=eg.createLinearGradient(0,96,0,176);gr.addColorStop(0,'rgba(20,60,255,0)');gr.addColorStop(.5,'rgba(30,95,255,.6)');gr.addColorStop(1,'rgba(20,60,255,0)');eg.fillStyle=gr;eg.fillRect(0,96,512,80);
+    eg.fillStyle='#e6eeff';for(let i=0;i<6;i++)eg.fillRect(18+i*85,30,54,8);eg.fillStyle='#9fc0ff';for(let i=0;i<6;i++)eg.fillRect(40+i*85,60,40,4);
+    const et=new T3.CanvasTexture(ec);et.mapping=T3.EquirectangularReflectionMapping;et.encoding=T3.sRGBEncoding;scene.environment=new T3.PMREMGenerator(renderer).fromEquirectangular(et).texture;
+    scene.add(new T3.HemisphereLight(0x9fbcff,0x05060a,.55));const key=new T3.DirectionalLight(0xffffff,.95);key.position.set(-3,7,4);scene.add(key);
+    [[-6,1.4,3.5],[6,1.8,-3.5],[0,2.5,-6]].forEach(p=>{const l=new T3.PointLight(0x2a6bff,.45,16);l.position.set(p[0],p[1],p[2]);scene.add(l)});
+    const P=(o)=>new T3.MeshPhysicalMaterial(o),S=(o)=>new T3.MeshStandardMaterial(o);
+    M={paint:P({color:0xe9edf3,metalness:.25,roughness:.32,clearcoat:1,clearcoatRoughness:.08,side:T3.DoubleSide}),glass:P({color:0x05070a,metalness:.9,roughness:.06,envMapIntensity:1.6,side:T3.DoubleSide}),
+      tyre:S({color:0x0b0b0c,roughness:.92}),rim:S({color:0xc9ccd2,metalness:1,roughness:.24}),dark:S({color:0x17191c,metalness:.6,roughness:.5}),eng:S({color:0x8d949b,metalness:.9,roughness:.4}),chrome:S({color:0xdfe3e8,metalness:1,roughness:.12}),
+      seat:S({color:0x111214,roughness:.8}),rider:S({color:0x2a2e34,roughness:.75}),helmet:P({color:0xe9edf3,metalness:.2,roughness:.25,clearcoat:1}),add:P({color:0xd63a28,emissive:0x4a0a05,metalness:.3,roughness:.35,clearcoat:.8,side:T3.DoubleSide}),
+      screen:P({color:0xff6a58,metalness:0,roughness:.1,transparent:true,opacity:.45,side:T3.DoubleSide}),lamp:new T3.MeshBasicMaterial({color:0xeef4ff}),tail:new T3.MeshBasicMaterial({color:0xff2a1a})};
+    M.paintV=M.paint.clone();M.paintV.vertexColors=true;
+    const floor=mesh(new T3.CircleGeometry(40,72),S({color:0x05070b,roughness:.55,metalness:.25,transparent:true,opacity:.8}));floor.rotation.x=-Math.PI/2;floor.renderOrder=-1;scene.add(floor);
+    const ring=mesh(new T3.RingGeometry(3.7,3.76,120),new T3.MeshBasicMaterial({color:0x2a6bff,transparent:true,opacity:.22}),0,.004,0);ring.rotation.x=-Math.PI/2;scene.add(ring);
+    const gc=document.createElement('canvas');gc.width=gc.height=256;const gg=gc.getContext('2d'),rg=gg.createRadialGradient(128,128,0,128,128,128);rg.addColorStop(0,'rgba(40,110,255,.28)');rg.addColorStop(1,'rgba(40,110,255,0)');gg.fillStyle=rg;gg.fillRect(0,0,256,256);
+    const glow=mesh(new T3.PlaneGeometry(13,13),new T3.MeshBasicMaterial({map:new T3.CanvasTexture(gc),transparent:true,blending:T3.AdditiveBlending,depthWrite:false}),0,.006,0);glow.rotation.x=-Math.PI/2;scene.add(glow);
+    U={uMix:{value:1},uTime:{value:0},uSpeed:{value:1},uX0:{value:-5},uX1:{value:7}};
+    new ResizeObserver(size).observe(cvs);size();
+  }
+  function size(){const r=cvs.getBoundingClientRect();if(!r.width||!renderer)return;renderer.setSize(r.width,r.height,false);camera.aspect=r.width/r.height;camera.updateProjectionMatrix();if(!raf)draw()}
+  function model(){
+    inst.forEach(I=>scene.remove(I.group));inst=[0,1].map(i=>{const I=type==='car'?car():bike();if(i)I.group.scale.y=-1;scene.add(I.group);return I});
+    const car_=type==='car';cam.tx=car_?.6:.5;cam.ty=car_?.8:.9;cam.base=car_?10:7.4;view('front',true);fit(true);
+  }
+  /* show or hide parts to match the switches; they ease in and out in the frame loop */
+  function fit(now){
+    inst.forEach(I=>{for(const id in I.parts){const g=I.parts[id];g.userData.t=cfg[id]?1:0;if(now){g.userData.s=g.userData.t;g.scale.setScalar(Math.max(.001,g.userData.s));g.visible=g.userData.s>.02}}
+      if(type==='bike'){I.up.visible=!cfg.tuck;I.tk.visible=!!cfg.tuck;I.pillion.visible=!cfg.cowl}else{I.body.userData.t=cfg.low?-.05:0;if(now)I.body.position.y=I.body.userData.t}});
+    flowTo();
+  }
+  const VIEWS={side:[0,.09],front:[-.75,.2],rear:[.95,.22],top:[0,1.35]};
+  function view(k,now){if(k==='in'||k==='out'){cam.zoom=clamp(cam.zoom*(k==='in'?.85:1.18),.55,1.6)}else{cam.taz=VIEWS[k][0];cam.tel=VIEWS[k][1]}if(now){cam.az=cam.taz;cam.el=cam.tel}}
+  function step(dt){
+    clock+=dt;U.uTime.value=clock;U.uSpeed.value=speed/120;mixT=Math.min(1,mixT+dt/.9);U.uMix.value=mixT*mixT*(3-2*mixT);
+    const k=Math.min(1,dt*5);cam.az+=(cam.taz-cam.az)*k;cam.el+=(cam.tel-cam.el)*k;cam.tr=cam.base*cam.zoom*clamp(1.9/camera.aspect,1,2.3);cam.r+=(cam.tr-cam.r)*k;
+    camera.position.set(cam.tx+cam.r*Math.cos(cam.el)*Math.sin(cam.az),cam.ty+cam.r*Math.sin(cam.el),cam.r*Math.cos(cam.el)*Math.cos(cam.az));camera.lookAt(cam.tx,cam.ty,0);
+    inst.forEach(I=>{I.wheels.forEach(w=>w.rotation.z+=dt*speed/3.6/.33*.14);
+      for(const id in I.parts){const g=I.parts[id],u=g.userData;if(Math.abs(u.t-u.s)>.001){u.s+=(u.t-u.s)*Math.min(1,dt*7);g.scale.setScalar(Math.max(.001,u.s));g.visible=u.s>.02}}
+      if(type==='car')I.body.position.y+=((I.body.userData.t||0)-I.body.position.y)*Math.min(1,dt*6)});
+    draw();
+  }
+  function draw(){if(renderer&&flow)renderer.render(scene,camera)}
+  function frame(now){raf=0;const dt=Math.min(.05,(now-last)/1000||.016);last=now;step(dt);loop()}
+  function loop(){if(!raf&&ready&&inView&&!document.hidden){raf=requestAnimationFrame(frame)}}
+  function boot(){
+    if(ready||loading)return;loading=true;$('#tMsg').textContent='Starting the wind tunnel';
+    const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+    s.onload=()=>{try{T3=window.THREE;init();model();ready=true;$('#tMsg').hidden=true;last=performance.now();step(.016);loop()}catch(e){$('#tMsg').textContent='The 3D wind tunnel could not start in this browser. The aero panel below still works.';console.error(e)}};
+    s.onerror=()=>{$('#tMsg').textContent='The 3D library could not be loaded. Check your connection and reload. The aero panel below still works.'};document.head.appendChild(s);
+  }
+
+  /* ----- wiring ----- */
+  function sync(v,b){veh=v;lastB=b;if(vid===v.id)return;vid=v.id;const tc=type!==v.t;type=v.t;cfg=fromBuild(v,b);ui(true);if(ready){if(tc||!inst.length)model();else fit(false)}}
+  $('#tMods').addEventListener('click',e=>{const b=e.target.closest('.tmod');if(!b)return;cfg[b.dataset.m]=!cfg[b.dataset.m];ui(false);if(ready)fit(false)});
+  $('#tSpeed').addEventListener('input',e=>{speed=+e.target.value;ui(false)});
+  $('#tViews').addEventListener('click',e=>{const b=e.target.closest('button');if(b)view(b.dataset.v)});
+  $('#tMatch').addEventListener('click',()=>{if(!veh)return;cfg=fromBuild(veh,lastB);ui(false);if(ready)fit(false)});
+  $('#tClear').addEventListener('click',()=>{cfg={};ui(false);if(ready)fit(false)});
+  cvs.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY};try{cvs.setPointerCapture(e.pointerId)}catch(x){}});
+  cvs.addEventListener('pointermove',e=>{if(!drag)return;cam.taz-=(e.clientX-drag.x)*.007;if(e.pointerType!=='touch')cam.tel=clamp(cam.tel+(e.clientY-drag.y)*.005,.04,1.45);drag={x:e.clientX,y:e.clientY}});
+  ['pointerup','pointercancel','lostpointercapture'].forEach(n=>cvs.addEventListener(n,()=>{drag=null}));
+  new IntersectionObserver(es=>{inView=es[0].isIntersecting;if(inView){boot();last=performance.now();loop()}},{rootMargin:'300px'}).observe(cvs);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden){last=performance.now();loop()}});
+  return{sync,boot,step(dt){if(ready)step(dt||.016)},get ready(){return ready}};
 })();
 
 /* ---------- hero: garage photo with its tube lights blinking in turn ---------- */
@@ -1365,3 +1817,5 @@ $('#heroTags').innerHTML=[[V.length,'bikes and cars'],[Object.values(PARTS).flat
 $('#credits').innerHTML=Object.keys(PHOTO).map(k=>`<a href="${CW+PHOTO[k][2]}" target="_blank" rel="noopener">${k.replace('_',' ')}: ${PHOTO[k][0]}, ${PHOTO[k][1]}</a>`).join(' · ');
 (function(){const v=byId(S.vid);renderVehicles();buildGauges(v);renderPresets();renderWall();if(!S.focus)S.focus=build()[S.cat];renderLift();})();
 </script>
+</body>
+</html>
