@@ -1,0 +1,1367 @@
+<meta charset="utf-8">
+<title>Torque Bay Workshop</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=Big+Shoulders+Display:wght@700;900&display=swap">
+<style>
+/* Layout: a night workshop. Roller shutter → pegboard hero → vehicle key tags → the lift (x-ray diagram + parts on the left, instrument panel on the right) → job card → stock parts wall. Signature detail: hand-painted double gold pinstripe, as on a heritage tank. */
+:root{
+  color-scheme:dark;
+  --floor:#121517; --bench:#1a1f22; --panel:#20262a; --steel:#353e44; --steel-hi:#5b676e;
+  --cream:#ece3cf; --dim:#9aa29c; --brass:#c9a24a; --red:#cf3a2b; --ok:#7db36f; --warn:#e2a336;
+  --dial:#0c0e0f;
+  --f-display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --f-body:"Barlow","Segoe UI",Roboto,Helvetica,sans-serif;
+  --f-data:"Barlow Condensed","Arial Narrow",sans-serif;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--floor);color:var(--cream);font-family:var(--f-body);font-size:16px;line-height:1.55;
+  background-image:radial-gradient(900px 480px at 50% -80px,rgba(201,162,74,.13),transparent 70%)}
+.wrap{max-width:1200px;margin-inline:auto;padding-inline:clamp(16px,4vw,32px)}
+h1,h2,h3{font-family:var(--f-display);font-weight:900;text-transform:uppercase;letter-spacing:.02em;line-height:1;margin:0;text-wrap:balance}
+h2{font-size:clamp(2rem,5vw,3rem)}
+h3{font-size:1.35rem;font-weight:700}
+p{margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+.label{font-family:var(--f-data);font-weight:600;text-transform:uppercase;letter-spacing:.14em;font-size:.8rem;color:var(--brass)}
+.lede{color:var(--dim);max-width:62ch}
+section{padding-block:clamp(40px,7vw,72px)}
+.sec-head{display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
+.pin{border:1px solid var(--brass);outline:1px solid var(--brass);outline-offset:3px}
+
+/* shutter */
+.shutter{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;
+  padding:24px;text-align:center;
+  background:repeating-linear-gradient(180deg,#2a3035 0 4px,#3a4248 4px 22px,#22282c 22px 26px);
+  box-shadow:inset 0 -40px 60px rgba(0,0,0,.6);transition:transform 1.5s cubic-bezier(.7,0,.25,1)}
+.shutter.open{transform:translateY(-103%)}
+.sign{background:#0f1112;padding:26px clamp(20px,6vw,56px);display:flex;flex-direction:column;gap:10px;align-items:center;max-width:100%}
+.sign h1{font-size:clamp(3rem,13vw,7.5rem);color:var(--cream)}
+.sign h1 span{color:var(--red)}
+.sign p{font-family:var(--f-data);letter-spacing:.3em;text-transform:uppercase;color:var(--brass);font-size:clamp(.75rem,2.4vw,1rem)}
+.enter{background:var(--red);border:0;color:#fff;font-family:var(--f-display);font-weight:900;font-size:1.5rem;letter-spacing:.06em;text-transform:uppercase;padding:14px 30px;box-shadow:0 6px 0 #7c1f16}
+.enter:active{transform:translateY(4px);box-shadow:0 2px 0 #7c1f16}
+.shutter small{font-family:var(--f-data);letter-spacing:.14em;text-transform:uppercase;color:#c9cfcc;background:rgba(0,0,0,.45);padding:4px 10px}
+.handle{position:absolute;bottom:18px;left:50%;width:120px;height:14px;margin-left:-60px;border-radius:7px;background:#14181a;box-shadow:inset 0 2px 3px #000}
+
+/* top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(18,21,23,.94);border-bottom:1px solid var(--steel)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-block:10px}
+.brand{font-family:var(--f-display);font-weight:900;font-size:1.5rem;letter-spacing:.06em;text-transform:uppercase}
+.neon{color:#ff6a58;text-shadow:0 0 .06em #fff,0 0 .18em #ff3b2a,0 0 .45em #ff2a18,0 0 .9em rgba(255,40,20,.75),0 0 1.6em rgba(255,40,20,.45);animation:neon 5.5s linear infinite}
+@keyframes neon{0%,18%,20%,22%,54%,56%,100%{color:#ff6a58;text-shadow:0 0 .06em #fff,0 0 .18em #ff3b2a,0 0 .45em #ff2a18,0 0 .9em rgba(255,40,20,.75),0 0 1.6em rgba(255,40,20,.45)}
+ 19%,21%,55%{color:#5a1f1a;text-shadow:none}}
+.brand span{color:var(--red)}
+.top nav{display:flex;gap:18px;flex-wrap:wrap}
+.top nav a{font-family:var(--f-data);text-transform:uppercase;letter-spacing:.14em;font-size:.85rem;color:var(--dim);text-decoration:none}
+.top nav a:hover{color:var(--cream)}
+
+/* hero */
+.hero{position:relative;isolation:isolate;overflow:hidden;background:#07090a;padding-block:clamp(72px,12vw,150px) clamp(64px,10vw,120px)}
+.hero-bg{position:absolute;inset:-5%;z-index:-2;animation:drift 30s ease-in-out infinite alternate}
+.hero-bg svg{display:block;width:100%;height:100%}
+.tube{opacity:0;animation:blink 7.5s linear infinite}
+.tube .off{stroke:#090b0c;stroke-linecap:round}
+.tube .body{stroke:#3b4247;stroke-linecap:round}
+@keyframes blink{0%{opacity:0}.4%,2.2%{opacity:.96}2.7%{opacity:0}3.4%,5.6%{opacity:.96}6.2%,100%{opacity:0}}
+.hero::after{content:"";position:absolute;inset:0;z-index:-1;background:
+  linear-gradient(180deg,var(--floor) 0,rgba(18,21,23,0) 9%,rgba(18,21,23,0) 52%,rgba(18,21,23,.75) 82%,var(--floor) 100%),
+  linear-gradient(90deg,rgba(8,10,11,.74) 0,rgba(8,10,11,.42) 42%,rgba(8,10,11,.1) 100%),
+  radial-gradient(55% 45% at 50% 0,rgba(201,162,74,.2),transparent 70%)}
+@keyframes drift{from{transform:scale(1)}to{transform:scale(1.09) translateY(-1.5%)}}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:32px;align-items:end}
+.hero h1{font-size:clamp(2.6rem,7.5vw,5.2rem)}
+.hero h1 em{font-style:normal;color:var(--brass)}
+.hero-copy{display:flex;flex-direction:column;gap:18px}
+.tags{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.tag{background:rgba(26,31,34,.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid rgba(236,227,207,.16);padding:14px 12px;display:flex;flex-direction:column;gap:2px;position:relative}
+.tag::before{content:"";position:absolute;top:8px;right:8px;width:9px;height:9px;border-radius:50%;background:var(--floor);box-shadow:inset 0 1px 2px #000}
+.tag b{font-family:var(--f-display);font-size:2.2rem;line-height:1;color:var(--cream)}
+.tag span{font-family:var(--f-data);text-transform:uppercase;letter-spacing:.1em;font-size:.78rem;color:var(--dim)}
+
+/* vehicle picker */
+.tabs{display:flex;gap:8px;margin-bottom:18px}
+.tab{background:none;border:1px solid var(--steel);padding:8px 20px;font-family:var(--f-data);font-weight:600;text-transform:uppercase;letter-spacing:.14em}
+.tab[aria-selected="true"]{background:var(--cream);color:var(--floor);border-color:var(--cream)}
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+.vcard{background:var(--bench);border:1px solid var(--steel);text-align:left;padding:14px 16px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.vcard:hover{border-color:var(--steel-hi)}
+.vcard[aria-pressed="true"]{border-color:var(--brass);outline:1px solid var(--brass);outline-offset:3px;background:var(--panel)}
+.vcard small{font-family:var(--f-data);text-transform:uppercase;letter-spacing:.14em;color:var(--dim);font-size:.75rem}
+.vcard strong{font-family:var(--f-display);font-size:1.5rem;line-height:1;text-transform:uppercase}
+.vcard .eng{color:var(--dim);font-size:.88rem}
+.vcard .nums{display:flex;gap:14px;font-family:var(--f-data);font-size:1rem;font-variant-numeric:tabular-nums;flex-wrap:wrap}
+.vcard .nums i{font-style:normal;color:var(--dim);font-size:.8rem}
+
+/* the lift */
+.lift{background:var(--bench);border-block:1px solid var(--steel)}
+.lift-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:28px;align-items:start}
+.col{display:flex;flex-direction:column;gap:18px;min-width:0}
+.box{background:var(--floor);border:1px solid var(--steel);padding:16px}
+.diagram svg{display:block;width:100%;height:auto}
+.diagram .deco{fill:none;stroke:var(--steel);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.hot{color:var(--steel-hi);cursor:pointer;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.hot .hit{stroke:transparent;fill:transparent;stroke-width:18;pointer-events:all}
+.hot .tooth{stroke-dasharray:4 4}
+.hot.mod{color:var(--brass)}
+.hot.on{color:var(--cream)}
+.hot.on.mod{color:#f0c865}
+.hot:focus-visible{outline:none;color:var(--red)}
+.dia-foot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-family:var(--f-data);text-transform:uppercase;letter-spacing:.1em;font-size:.8rem;color:var(--dim);margin-top:8px}
+.key{display:inline-block;width:18px;height:3px;vertical-align:middle;margin-right:6px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:none;border:1px solid var(--steel);padding:6px 12px;font-family:var(--f-data);font-weight:600;text-transform:uppercase;letter-spacing:.1em;font-size:.88rem;color:var(--dim)}
+.chip.mod{border-color:var(--brass);color:var(--brass)}
+.chip[aria-selected="true"]{background:var(--cream);border-color:var(--cream);color:var(--floor)}
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.opt{background:var(--panel);border:1px solid var(--steel);padding:12px 14px;text-align:left;display:flex;flex-direction:column;gap:8px;min-width:0}
+.opt:hover{border-color:var(--steel-hi)}
+.opt.sel{border-color:var(--brass);outline:1px solid var(--brass);outline-offset:3px}
+.opt.na{opacity:.6}
+.opt b{font-weight:600;line-height:1.25}
+.opt .meta{display:flex;justify-content:space-between;gap:8px;font-family:var(--f-data);font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
+.fx{display:flex;flex-wrap:wrap;gap:4px 10px;font-family:var(--f-data);font-size:.92rem;font-variant-numeric:tabular-nums}
+.up{color:var(--ok)} .down{color:var(--red)} .flat{color:var(--dim)} .loud{color:var(--warn)}
+.stamp{display:inline-block;font-family:var(--f-display);font-weight:900;text-transform:uppercase;letter-spacing:.08em;font-size:1.1rem;padding:3px 10px;border:2px solid currentColor;transform:rotate(-2deg)}
+.stamp.bolt,.stamp.stock{color:var(--ok)} .stamp.adapt{color:var(--warn)} .stamp.fab,.stamp.no{color:var(--red)}
+
+/* job card */
+.job{background:#ece3cf;color:#1b1e20;padding:20px;display:flex;flex-direction:column;gap:14px;position:relative}
+.job-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;flex-wrap:wrap;border-bottom:2px solid #1b1e20;padding-bottom:12px}
+.job-head .label{color:#8a2318}
+.job h3{font-size:1.6rem}
+.job .art{width:120px;flex:none;color:#1b1e20}
+.job-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.job h4{margin:0 0 4px;font-family:var(--f-data);text-transform:uppercase;letter-spacing:.14em;font-size:.82rem;color:#8a2318}
+.job ul{margin:0;padding-left:18px}
+.job li{margin-bottom:3px}
+.job .law{font-size:.9rem;border-top:1px dashed #1b1e20;padding-top:10px}
+.job .stamp.bolt,.job .stamp.stock{color:#2f6b27}.job .stamp.adapt{color:#96620a}.job .stamp.fab,.job .stamp.no{color:#a02519}
+
+/* gauges */
+.cluster{position:sticky;top:calc(env(safe-area-inset-top,0px) + 64px)}
+@media (max-height:900px){.cluster{position:static}}
+.cl-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.gauges{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 10px}
+.g{margin:0;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0;text-align:center}
+.g svg{width:100%;height:auto;display:block}
+.g .bezel{fill:var(--dial);stroke:var(--brass);stroke-width:3}
+.g .track{fill:none;stroke:var(--steel);stroke-width:2}
+.g .redarc{fill:none;stroke:var(--red);stroke-width:5}
+.g .tick{stroke:var(--cream);stroke-width:2}
+.g .tick.minor{stroke:var(--steel-hi);stroke-width:1.2}
+.g .num{fill:var(--cream);font-family:var(--f-data);font-size:13px;font-weight:600;text-anchor:middle;dominant-baseline:middle}
+.g .ghost{fill:var(--brass)}
+.g .needle{transition:transform 1s cubic-bezier(.3,1.4,.5,1);transform-origin:100px 105px}
+.g .needle path{fill:var(--red)}
+.g .hub{fill:#2a3035;stroke:var(--cream);stroke-width:1.5}
+.g .val{fill:var(--cream);font-family:var(--f-data);font-weight:700;font-size:25px;text-anchor:middle;font-variant-numeric:tabular-nums}
+.g .unit{fill:var(--dim);font-family:var(--f-data);font-size:11px;text-anchor:middle;letter-spacing:.08em}
+.g figcaption{display:flex;flex-direction:column;line-height:1.2}
+.g figcaption b{font-family:var(--f-data);font-weight:600;text-transform:uppercase;letter-spacing:.1em;font-size:.82rem}
+.g figcaption span{font-family:var(--f-data);font-size:.88rem;font-variant-numeric:tabular-nums}
+
+/* build sheet */
+.sheet table{width:100%;border-collapse:collapse;font-size:.95rem}
+.sheet th,.sheet td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--steel);vertical-align:top}
+.sheet th{font-family:var(--f-data);text-transform:uppercase;letter-spacing:.12em;font-size:.78rem;color:var(--dim);font-weight:600}
+.sheet td:last-child,.sheet th:last-child{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.sheet tfoot td{font-weight:600;border-bottom:0}
+.scroll{overflow-x:auto}
+.warns{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none}
+.warns li{border-left:4px solid var(--warn);background:var(--panel);padding:8px 12px;font-size:.93rem}
+.warns li.good{border-color:var(--ok)}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.btn{background:none;border:1px solid var(--steel-hi);padding:7px 14px;font-family:var(--f-data);font-weight:600;text-transform:uppercase;letter-spacing:.1em;font-size:.85rem}
+.btn:hover{border-color:var(--cream)}
+
+/* test strip */
+.game{display:flex;flex-direction:column;gap:14px;padding:0;overflow:hidden}
+.game:focus-visible{outline-offset:-2px}
+.g-view{position:relative;background:#0a0c0d}
+#gCanvas{display:block;width:100%;height:clamp(220px,34vw,340px)}
+.g-msg{position:absolute;left:0;right:0;top:62px;text-align:center;font-family:var(--f-data);font-weight:600;text-transform:uppercase;letter-spacing:.12em;font-size:.92rem;color:var(--cream);text-shadow:0 1px 4px #000,0 0 12px #000;padding-inline:12px;pointer-events:none}
+.g-dash{display:grid;grid-template-columns:minmax(0,290px) minmax(0,1fr) minmax(0,300px);gap:18px;padding-inline:16px;align-items:center}
+.g-gauges{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.g.live .needle{transition:transform .09s linear}
+.g-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:10px}
+.tile{background:var(--panel);border:1px solid var(--steel);padding:8px 10px;display:flex;flex-direction:column;min-width:0}
+.tile b{font-family:var(--f-data);font-weight:700;font-size:1.7rem;line-height:1.15;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tile span{font-family:var(--f-data);text-transform:uppercase;letter-spacing:.1em;font-size:.74rem;color:var(--dim)}
+.g-ctl{display:flex;flex-direction:column;gap:10px}
+.enter.sm{font-size:1.15rem;padding:8px 18px;box-shadow:0 4px 0 #7c1f16}
+.pedals{display:grid;grid-template-columns:1fr 1.4fr;gap:10px}
+.pedal{background:var(--panel);border:2px solid var(--steel-hi);min-height:84px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-family:var(--f-display);font-weight:900;font-size:1.3rem;text-transform:uppercase;letter-spacing:.06em;touch-action:none;user-select:none;-webkit-user-select:none}
+.pedal small{font-family:var(--f-data);font-weight:500;font-size:.78rem;letter-spacing:.08em;color:var(--dim)}
+.pedal.on{background:var(--brass);border-color:var(--brass);color:var(--floor)}
+.pedal.brake.on{background:var(--red);border-color:var(--red);color:#fff}
+.pedal.on small{color:inherit}
+.g-tune{padding:0 16px 16px;color:var(--dim);font-size:.92rem;max-width:none}
+.g-verdict{font-family:var(--f-display);font-weight:700;font-size:1.35rem;text-transform:uppercase;letter-spacing:.03em;color:var(--brass)}
+.sheet.runs td:last-child,.sheet.runs th:last-child{text-align:left}
+@media (max-width:900px){.g-dash{grid-template-columns:minmax(0,1fr)}.g-gauges{max-width:340px}}
+
+/* parts wall */
+.wall{display:flex;flex-direction:column;gap:40px}
+.station{display:flex;flex-direction:column;gap:14px;min-width:0}
+.st-h{font-size:1.9rem;font-weight:900;border-bottom:1px solid var(--brass);padding-bottom:8px}
+.wall-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;align-items:start}
+.part.stockp{border-color:var(--brass);outline:1px solid var(--brass);outline-offset:3px}
+.part.napart{opacity:.7}
+.part .modl{color:var(--cream)}
+.part .price{font-family:var(--f-data);color:var(--dim);font-variant-numeric:tabular-nums}
+.part .only{color:var(--warn);font-size:.9rem}
+.part .btn{align-self:flex-start}
+.opt .thumb{display:block;width:calc(100% + 28px);max-width:none;margin:-12px -14px 2px;aspect-ratio:16/9;height:auto;object-fit:cover}
+.shown{position:absolute;left:0;top:0;background:rgba(12,14,15,.82);color:var(--warn);font-family:var(--f-data);font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px}
+.part{background:var(--bench);border:1px solid var(--steel);display:flex;flex-direction:column;min-width:0}
+.part .art{background:var(--dial);padding:14px 28px;color:var(--cream);background-image:radial-gradient(circle,rgba(255,255,255,.06) 2px,transparent 2.5px);background-size:20px 20px}
+.art svg{display:block;width:100%;height:auto}
+.art .ln{fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.art .fl{fill:rgba(201,162,74,.28);stroke:currentColor;stroke-width:3;stroke-linejoin:round}
+.art .tooth{fill:none;stroke:currentColor;stroke-width:4;stroke-dasharray:3 3}
+.part-body{padding:16px;display:flex;flex-direction:column;gap:10px}
+.part dl{margin:0;display:flex;flex-direction:column;gap:8px}
+.part dt{font-family:var(--f-data);text-transform:uppercase;letter-spacing:.14em;font-size:.76rem;color:var(--brass)}
+.part dd{margin:0;font-size:.94rem;color:#d6cfbe}
+
+/* photographs */
+.vcard img,.vcard .noimg{display:block;width:calc(100% + 32px);max-width:none;margin:-14px -16px 6px;aspect-ratio:16/10;height:auto;object-fit:cover;background:var(--dial)}
+.vcard .noimg{color:var(--steel-hi);padding:18px 50px}
+.vcard .noimg svg{width:100%;height:100%}
+.vcard .noimg .ln{fill:none;stroke:currentColor;stroke-width:3}.vcard .noimg .fl{fill:none;stroke:currentColor;stroke-width:3}
+.photo{margin:0;position:relative;background:var(--dial);min-width:0}
+.photo img{display:block;width:100%;height:auto;aspect-ratio:16/10;object-fit:cover}
+.credit{position:absolute;right:0;bottom:0;max-width:100%;background:rgba(12,14,15,.78);color:#d6cfbe;font-family:var(--f-data);font-size:.72rem;letter-spacing:.04em;padding:2px 8px;text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.credit:hover{color:#fff;text-decoration:underline}
+.job-top{display:grid;grid-template-columns:minmax(0,240px) minmax(0,1fr);gap:16px;align-items:start}
+.job .photo{border:2px solid #1b1e20}
+@media (max-width:560px){.job-top{grid-template-columns:minmax(0,1fr)}}
+.credits{font-size:.8rem;line-height:1.7}
+.credits a{color:var(--dim)}
+footer{border-top:1px solid var(--steel);padding-block:32px;color:var(--dim);font-size:.9rem}
+footer .wrap{display:flex;flex-direction:column;gap:10px}
+footer p{max-width:85ch}
+
+@media (max-width:900px){
+  .hero .wrap,.lift-grid{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:460px){
+  .gauges{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .top nav{gap:12px}
+}
+@media (prefers-reduced-motion:reduce){.shutter,.g .needle{transition:none}.hero-bg,.tube,.neon{animation:none}}
+</style>
+
+<div class="shutter" id="shutter">
+  <div class="sign pin">
+    <p>Motorcycle &amp; car modification</p>
+    <h1>Torque <span class="neon">Bay</span></h1>
+    <p>Fit it · reason it · read the dial</p>
+  </div>
+  <button class="enter" id="enter" type="button">Roll up the shutter</button>
+  <small>Workshop open · mind the oil</small>
+  <div class="handle"></div>
+</div>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">Torque <span class="neon">Bay</span></div>
+    <nav aria-label="Workshop areas">
+      <a href="#bay">Roll in</a><a href="#lift">The lift</a><a href="#sheet">Build sheet</a><a href="#strip">Test strip</a><a href="#wall">Parts wall</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-bg" id="heroBg" aria-hidden="true"></div>
+  <div class="wrap">
+    <div class="hero-copy">
+      <span class="label">Bay 1 is free</span>
+      <h1>Every swap has a reason. <em>Read it on the dial.</em></h1>
+      <p class="lede">Roll a bike or car onto the lift, change its parts, and see what the swap does to power, sound, handling and reliability. Each part comes with a job card: whether it fits, what it takes to make it fit, what you gain, what you lose, and what to do instead.</p>
+    </div>
+    <div class="tags" id="heroTags"></div>
+  </div>
+</div>
+
+<section id="bay">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="label">Step one</span>
+      <h2>Roll in a vehicle</h2>
+      <p class="lede">Stock figures are approximate manufacturer and road-test numbers. They are the baseline every dial is measured against.</p>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Vehicle type">
+      <button class="tab" role="tab" id="tabBike" data-t="bike" type="button">Bikes</button>
+      <button class="tab" role="tab" id="tabCar" data-t="car" type="button">Cars</button>
+    </div>
+    <div class="vgrid" id="vgrid"></div>
+  </div>
+</section>
+
+<section class="lift" id="lift">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="label">Step two</span>
+      <h2 id="liftTitle">On the lift</h2>
+      <p class="lede">Tap a part on the drawing or pick a station below. Choose a part to fit it. The instrument panel moves as you build.</p>
+    </div>
+    <div class="lift-grid">
+      <div class="col">
+        <div class="box diagram">
+          <div id="diagram"></div>
+          <div class="dia-foot">
+            <span><i class="key" style="background:var(--steel-hi)"></i>Stock <i class="key" style="background:var(--brass);margin-left:12px"></i>Modified <i class="key" style="background:var(--cream);margin-left:12px"></i>Selected station</span>
+            <span id="buildTag"></span>
+          </div>
+        </div>
+        <div class="chips" id="chips" role="tablist" aria-label="Part stations"></div>
+        <div class="opts" id="opts"></div>
+        <div class="job" id="job" aria-live="polite"></div>
+      </div>
+      <div class="col cluster">
+        <div class="box">
+          <div class="cl-head">
+            <h3>Instrument panel</h3>
+            <span class="label">Brass mark = stock</span>
+          </div>
+          <div class="gauges" id="gauges"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="sheet">
+  <div class="wrap sheet">
+    <div class="sec-head">
+      <span class="label">Step three</span>
+      <h2>Build sheet</h2>
+      <p class="lede">Everything fitted, what it costs, and where parts depend on each other. Prices are rough Indian market ranges for parts, before labour.</p>
+    </div>
+    <div class="col">
+      <div class="btns" id="presets"></div>
+      <ul class="warns" id="warns"></ul>
+      <div class="scroll"><table>
+        <thead><tr><th>Station</th><th>Fitted</th><th>Fit</th><th>Parts cost</th></tr></thead>
+        <tbody id="sheetBody"></tbody>
+        <tfoot><tr><td colspan="3">Total parts</td><td id="sheetTotal"></td></tr></tfoot>
+      </table></div>
+    </div>
+  </div>
+</section>
+
+<section id="strip" style="border-top:1px solid var(--steel)">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="label">Step four</span>
+      <h2>Test strip</h2>
+      <p class="lede">Take the build on the lift down a 400 m strip against the stock version of the same vehicle. How hard it pulls, where it tops out, how fast it stops and how the exhaust sounds all come from the instrument panel figures.</p>
+    </div>
+    <div class="col">
+      <div class="box game" id="game" tabindex="0" aria-label="Test strip. Hold the up arrow to accelerate and the down arrow to brake.">
+        <div class="g-view"><canvas id="gCanvas"></canvas><p class="g-msg" id="gMsg" aria-live="polite"></p></div>
+        <div class="g-dash">
+          <div class="g-gauges" id="gGauges"></div>
+          <div class="g-tiles">
+            <div class="tile"><b id="gGear">N</b><span>Gear</span></div>
+            <div class="tile"><b id="gTime">0.00 s</b><span>Run time</span></div>
+            <div class="tile"><b id="gDist">0 m</b><span>Distance</span></div>
+            <div class="tile"><b id="gGap">0.0 m</b><span>Gap to stock</span></div>
+            <div class="tile"><b id="gDb">–</b><span>Exhaust, full throttle</span></div>
+          </div>
+          <div class="g-ctl">
+            <div class="btns">
+              <button class="enter sm" id="gStart" type="button">Start run</button>
+              <button class="btn" id="gStop" type="button">Engine off</button>
+              <button class="btn" id="gMute" type="button" aria-pressed="true">Sound on</button>
+            </div>
+            <div class="pedals">
+              <button class="pedal brake" id="gBrake" type="button">Brake<small>↓ or S</small></button>
+              <button class="pedal" id="gThr" type="button">Throttle<small>↑, W or Space</small></button>
+            </div>
+          </div>
+        </div>
+        <p class="g-tune" id="gTune"></p>
+      </div>
+      <p class="g-verdict" id="gVerdict"></p>
+      <div class="scroll sheet runs"><table>
+        <thead><tr><th>Measure</th><th>Your run</th><th>This build, perfect run</th><th>Stock, perfect run</th></tr></thead>
+        <tbody id="gRes"></tbody>
+      </table></div>
+    </div>
+  </div>
+</section>
+
+<section id="wall"style="background:var(--bench);border-top:1px solid var(--steel)">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="label">On the pegboard</span>
+      <h2 id="wallTitle">Parts wall</h2>
+      <p class="lede">Each station shows the factory part first, then every modification part for it: what it looks like, how it works, what you gain and what it costs you. Figures follow the vehicle on the lift.</p>
+    </div>
+    <div class="wall" id="wallGrid"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p><strong style="color:var(--cream)">How the numbers are made.</strong> The dials come from a simplified physics model: power and torque percentages per part, power-to-weight for acceleration, a cube-root power law and a gearing limit for top speed. They show direction and rough size of a change. They are not dyno results. The test strip is calibrated to the same figures, so a perfect launch there reaches 100 km/h in the time the panel shows, and the engine sound is synthesised from cylinder count, revs and the exhaust dial. Real gains depend on the exact part, the tune and the condition of the engine.</p>
+    <p><strong style="color:var(--cream)">Road law.</strong> In India, Section 52 of the Motor Vehicles Act restricts altering a vehicle from its registered specification, and loud or cat-less exhausts are routinely fined and can fail the PUC test. Structural, lighting and emissions changes can also affect insurance and warranty. Check your RTO and insurer before fitting anything.</p>
+    <p><strong style="color:var(--cream)">Coverage.</strong> This first version carries 14 popular bikes and cars.</p>
+    <p><strong style="color:var(--cream)">Photographs.</strong> Photos are from Wikimedia Commons, cropped and resized, used under the licence shown on each. They show the model line or the type of part, not the exact item for your vehicle; year, variant and brand may differ from the listed specification. Where no free photo was found, a workshop sketch is shown.</p>
+    <p id="credits" class="credits"></p>
+  </div>
+</footer>
+
+<script>
+/* ---------- vehicles (approximate stock figures) ---------- */
+const V=[
+{id:'cl350',t:'bike',mk:'Royal Enfield',n:'Classic 350',eng:'349 cc air-oil cooled single',ind:'na',ls:1,p:20.2,tq:27,kg:195,top:115,acc:16,fe:35,db:82,hd:50,br:52,rel:88,ft:'100/90-19',rt:'120/80-18'},
+{id:'hn350',t:'bike',mk:'Royal Enfield',n:'Hunter 350',eng:'349 cc air-oil cooled single',ind:'na',ls:1,p:20.2,tq:27,kg:181,top:114,acc:14.5,fe:36,db:82,hd:60,br:58,rel:88,ft:'110/70-17',rt:'140/70-17'},
+{id:'hm450',t:'bike',mk:'Royal Enfield',n:'Himalayan 450',eng:'452 cc liquid-cooled single',ind:'na',p:39.5,tq:40,kg:196,top:150,acc:7.2,fe:30,db:83,hd:62,br:64,rel:82,ft:'90/90-21',rt:'140/80-17'},
+{id:'int650',t:'bike',mk:'Royal Enfield',n:'Interceptor 650',eng:'648 cc air-oil cooled parallel twin',ind:'na',tw:1,spr:[15,38],p:47,tq:52.3,kg:218,top:165,acc:6.5,fe:25,db:84,hd:60,br:62,rel:86,ft:'100/90-18',rt:'130/70-18'},
+{id:'gt650',t:'bike',mk:'Royal Enfield',n:'Continental GT 650',eng:'648 cc air-oil cooled parallel twin',ind:'na',tw:1,spr:[15,38],p:47,tq:52.3,kg:214,top:168,acc:6.3,fe:25,db:84,hd:66,br:64,rel:86,ft:'100/90-18',rt:'130/70-18'},
+{id:'dk390',t:'bike',mk:'KTM',n:'390 Duke',eng:'399 cc liquid-cooled single',ind:'na',p:45.3,tq:39,kg:168,top:167,acc:5.6,fe:28,db:85,hd:82,br:80,rel:74,ft:'110/70-17',rt:'150/60-17'},
+{id:'r15',t:'bike',mk:'Yamaha',n:'R15 V4',eng:'155 cc liquid-cooled single, VVA',ind:'na',spr:[14,48],p:18.1,tq:14.2,kg:141,top:140,acc:11.5,fe:45,db:80,hd:80,br:72,rel:88,ft:'100/80-17',rt:'140/70-17'},
+{id:'ns200',t:'bike',mk:'Bajaj',n:'Pulsar NS200',eng:'199.5 cc liquid-cooled single',ind:'na',p:24.1,tq:18.7,kg:158,top:136,acc:9.8,fe:36,db:83,hd:70,br:66,rel:80,ft:'100/80-17',rt:'130/70-17'},
+{id:'swift',t:'car',mk:'Maruti Suzuki',n:'Swift 1.2',eng:'1197 cc 3-cyl petrol, naturally aspirated',ind:'na',p:80.5,tq:111.7,kg:920,top:165,acc:12.8,fe:24,db:72,hd:62,br:58,rel:90,ft:'185/65 R15',rt:'185/65 R15',rim:15},
+{id:'polo',t:'car',mk:'Volkswagen',n:'Polo GT TSI',eng:'999 cc 3-cyl turbo petrol',ind:'turbo',p:108,tq:175,kg:1090,top:190,acc:9.9,fe:17,db:73,hd:72,br:66,rel:80,ft:'195/55 R16',rt:'195/55 R16',rim:16},
+{id:'i20n',t:'car',mk:'Hyundai',n:'i20 N Line',eng:'998 cc 3-cyl turbo petrol',ind:'turbo',p:118,tq:172,kg:1150,top:190,acc:10,fe:18,db:75,hd:74,br:70,rel:82,ft:'195/55 R16',rt:'195/55 R16',rim:16},
+{id:'city',t:'car',mk:'Honda',n:'City 1.5 i-VTEC',eng:'1498 cc 4-cyl petrol, naturally aspirated',ind:'na',p:119,tq:145,kg:1110,top:190,acc:10.2,fe:17.5,db:72,hd:66,br:62,rel:92,ft:'185/55 R16',rt:'185/55 R16',rim:16},
+{id:'thar',t:'car',mk:'Mahindra',n:'Thar 2.0 petrol',eng:'1997 cc 4-cyl turbo petrol, 4x4',ind:'turbo',off:1,p:150,tq:300,kg:1750,top:155,acc:10.5,fe:12,db:74,hd:38,br:50,rel:82,ft:'255/65 R18',rt:'255/65 R18',rim:18},
+{id:'vrs',t:'car',mk:'Skoda',n:'Octavia vRS 245',eng:'1984 cc 4-cyl turbo petrol',ind:'turbo',p:241,tq:370,kg:1445,top:250,acc:6.6,fe:14,db:76,hd:82,br:82,rel:78,ft:'225/40 R18',rt:'225/40 R18',rim:18}
+];
+
+/* ---------- part stations ---------- */
+const CATS={
+ bike:[['exhaust','Exhaust'],['intake','Air intake'],['ecu','Fuelling'],['finaldrive','Final drive'],['wheels','Wheels & tyres'],['suspension','Suspension'],['brakes','Brakes'],['body','Body & weight']],
+ car:[['exhaust','Exhaust'],['intake','Air intake'],['ecu','ECU tune'],['boost','Turbo & cooling'],['wheels','Wheels & tyres'],['suspension','Suspension'],['brakes','Brakes'],['body','Body & weight']]
+};
+const FUELLED=['piggy','flash','stage1','stage2'];
+const LAW_EX='Changing the silencer alters the vehicle from its registered specification (MV Act, Section 52). Removing the catalytic converter will fail a PUC emissions test.';
+
+/* fx: p/tq = % change (number, or {na,turbo}); kg; db; hd/br/rel = index points; fe = % mileage; gear >1 = taller; drag = CdA multiplier; rev = rev-limit multiplier. cost in thousand rupees [low, high]. */
+const PARTS={
+bike:{
+ exhaust:[
+  {id:'stock',name:'Stock silencer with catalytic converter'},
+  {id:'slip',name:'Slip-on silencer, catalyst kept',fit:'bolt',fx:{p:2,tq:1,kg:-2.5,db:6},cost:[9,18],
+   why:'Only the muffler changes. Header length, the catalytic converter and the oxygen sensor stay where they are, so the ECU keeps correcting fuel inside its normal trim range. The gain is small because most of the restriction is in the catalyst and header, not the can.',
+   needs:['A can made for this model: the link-pipe clamp diameter and the hanger must match the footrest bracket','New clamp and exhaust sealant at the joint','A removable dB-killer baffle if you ride in town'],
+   pros:['Deeper note without retuning','2 to 3 kg lighter, low on the bike','Fully reversible in 20 minutes'],
+   cons:['Power gain is too small to feel','Still louder than the homologated silencer'],
+   alt:['Keep the stock can and fit a drop-in air filter for a similar gain with no noise','If you want real power, go to a full system with a fuelling correction'],legal:LAW_EX},
+  {id:'full',name:'Full system, header and free-flow silencer',fit:'adapt',needFuel:1,fx:{p:7,tq:4,kg:-5.5,db:14,fe:-4,rel:-2},cost:[22,60],
+   why:'A tuned-length header with no catalyst lowers pumping loss and improves scavenging at high rpm. It also changes how much air the engine moves, so the stock fuel map is now lean. The fit is mechanical and electronic: flange, sensor and fuelling all have to match.',
+   needs:['A threaded oxygen-sensor bung in the new header, in the same position as stock','New exhaust port gaskets and flange nuts','A fuelling correction: piggyback controller or ECU reflash','Heat shield or wrap where the header passes the leg and oil lines'],
+   pros:['The biggest bolt-on power gain on a naturally aspirated engine','5 to 6 kg lighter','Sharper throttle response once fuelled'],
+   cons:['Some low-rpm torque is lost if the header is too wide for the engine','Not road legal without a catalyst','Runs lean and hot if you skip the fuelling step'],
+   alt:['Slip-on plus drop-in filter keeps the catalyst and needs no tune','A full system with an integrated high-flow catalyst keeps emissions closer to legal'],legal:LAW_EX},
+  {id:'short',name:'Short open pipe, no baffle',fit:'adapt',needFuel:1,fx:{p:-3,tq:-6,kg:-6,db:24,fe:-6,rel:-5},cost:[4,10],
+   why:'A short open pipe has almost no reflected pressure wave to help fill the cylinder at low and mid rpm. Exhaust gas velocity drops, fresh charge escapes during valve overlap, and torque falls where a road bike spends its time. It sounds fast and is slower.',
+   needs:['Oxygen-sensor bung, or the ECU will log a fault','Richer fuelling to stop popping and overheating on a closed throttle','Ear protection'],
+   pros:['Maximum sound','Cheapest and lightest option'],
+   cons:['Loses torque across the useful rev range','Exhaust valves run hotter','Certain to attract a fine'],
+   alt:['A slip-on with a removable baffle gives the note without the torque loss','For sound and power together, choose the full system and tune it'],legal:LAW_EX}
+ ],
+ intake:[
+  {id:'stock',name:'Stock paper filter in sealed airbox'},
+  {id:'dropin',name:'High-flow drop-in filter',fit:'bolt',fx:{p:1.5,tq:1,db:1,rel:-1},cost:[2.5,5],
+   why:'It sits in the stock airbox on the stock sealing lip, so the airbox still feeds still, cool air and keeps its intake resonance. Oiled cotton gauze flows a little more than paper at the same size.',
+   needs:['The filter listed for this exact model so the seal seats','Cleaning and re-oiling at each service; too much oil fouls sensors'],
+   pros:['No tune needed','Washable and reusable','Keeps the airbox and its low-rpm torque'],
+   cons:['Lets slightly finer dust through than paper','Gain is small on its own'],
+   alt:['A fresh stock paper filter recovers most of the difference on a neglected bike']},
+  {id:'pod',name:'Open pod filter, airbox removed',fit:'adapt',needFuel:1,fx:{p:3,tq:-3,db:4,rel:-4,fe:-2,kg:-1.5},cost:[1.5,6],
+   why:'The airbox is a tuned chamber. Its volume and snorkel length create a resonance that pushes extra air in at mid rpm. Remove it and peak airflow rises a little, but the mid-range dips and the filter now breathes hot, turbulent air from behind the engine.',
+   needs:['A pod with the right spigot diameter for the throttle body','A new home for the intake air temperature sensor and crankcase breather','A fuelling correction, because airflow no longer matches the stock map','A rain sock or shield if you ride in the monsoon'],
+   pros:['Loud intake roar','A little more top-end power once tuned','Frees space under the seat'],
+   cons:['Weaker mid-range, which is what you use on the road','Dust and water get in more easily','Heat soak in traffic'],
+   alt:['Drop-in filter with the airbox lid snorkel opened up is a safer halfway step']}
+ ],
+ ecu:[
+  {id:'stock',name:'Stock closed-loop ECU map'},
+  {id:'piggy',name:'Piggyback fuel controller',fit:'bolt',fx:{p:2,tq:2,fe:-3},cost:[12,25],
+   why:'It plugs in between the injector and the wiring loom and lengthens the injector pulse by a set percentage at each throttle and rpm point. The stock ECU is untouched, so it is easy to fit and remove. It cannot change ignition timing or the rev limit.',
+   needs:['The plug-and-play harness for this model','A base map for your exhaust and filter, ideally checked on a dyno with a wideband sensor','An oxygen-sensor eliminator or optimiser so the ECU does not trim the extra fuel back out'],
+   pros:['Makes exhaust and intake changes safe','Smooths low-rpm snatch on lean emission maps','Removable, with no trace in the ECU'],
+   cons:['Fuel only, no timing','Mileage drops a little'],
+   alt:['An ECU reflash gives more control if a tuner supports your ECU']},
+  {id:'flash',name:'ECU reflash, custom dyno tune',fit:'adapt',fx:{p:5,tq:4,fe:-2,rel:-2,rev:1.03},cost:[15,35],
+   why:'The fuel and ignition tables inside the stock ECU are rewritten for the parts actually fitted. Factory maps are lean for emissions and soft on ignition advance for poor fuel. A reflash recovers that margin and can raise the rev limiter slightly.',
+   needs:['A tuner who can read and write this ECU','Good fuel from here on: the safety margin for low-octane petrol is smaller','Dyno time with a wideband sensor, not a downloaded generic map'],
+   pros:['Best result from any exhaust and intake combination','Crisper throttle and cooler running than a lean stock map','Higher rev limit'],
+   cons:['Voids the engine warranty','Less tolerance for bad fuel and heat'],
+   alt:['A piggyback controller if no tuner supports your ECU or you want to keep warranty options']}
+ ],
+ finaldrive:[
+  {id:'stock',name:'Stock sprockets and chain'},
+  {id:'short',name:'Shorter gearing, rear sprocket +3 teeth',fit:'adapt',fx:{gear:0.93,fe:-5},cost:[3,7],
+   why:'Final drive ratio is rear teeth divided by front teeth. More rear teeth multiplies torque at the wheel in every gear, so the bike pulls harder, and the engine turns more rpm at any road speed.',
+   needs:['A longer chain, usually two more links','Enough travel left in the chain adjusters','A check that the bigger sprocket clears the chain guard'],
+   pros:['Stronger acceleration and easier overtakes','Less gear-changing in town'],
+   cons:['Top speed can become rev-limited','Busier engine and more vibration on the highway','Lower mileage at cruise'],
+   alt:['One tooth less on the front gives a similar ratio for less money, but wears the chain faster around the tighter radius']},
+  {id:'tall',name:'Taller gearing, front sprocket +1 tooth',fit:'bolt',fx:{gear:1.065,fe:4},cost:[1,3],
+   why:'One extra front tooth lowers the ratio by about 6 to 7 percent. The engine turns fewer rpm at cruise, which calms vibration and saves fuel, at the cost of pull in each gear.',
+   needs:['Clearance between the larger sprocket, its cover and the swingarm pivot','Chain slack reset; the stock chain length normally still fits'],
+   pros:['Relaxed highway cruising','Better mileage','Cheap and reversible'],
+   cons:['Slower acceleration','A low-powered bike may not pull top gear into a headwind'],
+   alt:['Stay stock if the engine already struggles in top gear']},
+  {id:'light',name:'Lightweight chain and alloy rear sprocket',fit:'adapt',fx:{kg:-1.2,rel:-2,hd:1},cost:[8,16],
+   why:'Chain and sprocket are rotating and unsprung mass. Saving weight here helps the engine spin up and the rear suspension follow the road. A narrower chain pitch must still be rated for the engine torque.',
+   needs:['Front and rear sprockets and chain changed together, all the same pitch','A chain tensile rating that covers this engine','More frequent cleaning and adjustment'],
+   pros:['Slightly quicker response','Less unsprung weight'],
+   cons:['Alloy teeth wear much faster than steel','Small gain for the money'],
+   alt:['A quality sealed steel chain kit in the stock size lasts longer']}
+ ],
+ wheels:[
+  {id:'stock',name:'Stock tyres and wheels'},
+  {id:'sport',name:'Sport-compound tyres, stock size',fit:'bolt',fx:{hd:10,br:8,fe:-2},cost:[9,18],
+   why:'Same size, softer compound and a better carcass. Fitment is unchanged, so speedometer reading, ABS calibration and steering geometry stay correct. Grip is the limit for cornering and braking, so this is the most effective handling change per rupee.',
+   needs:['Stock sizes front and rear','Speed and load rating at least equal to stock','Balancing after fitting'],
+   pros:['More grip in corners and under braking','Better wet-road confidence','No side effects on geometry'],
+   cons:['Wears faster','Slightly more rolling resistance'],
+   alt:['If budget is tight, change only the front tyre first; it does most of the braking']},
+  {id:'wide',name:'Wider rear tyre',fit:'adapt',fx:{hd:-3,br:2,kg:1.5,fe:-3},cost:[5,11],
+   why:'Each tyre width is designed for a range of rim widths. Squeeze a wide tyre on a narrow rim and the tread crowns into a tighter arc, so the contact patch at lean gets smaller, not bigger. It also has to clear the swingarm, chain and mudguard.',
+   needs:['At least 5 mm gap to chain and swingarm, checked with the suspension compressed','A rim width inside the range the tyre maker lists','A matching change in profile so rolling diameter stays close to stock'],
+   pros:['Looks muscular','Slightly more straight-line braking grip'],
+   cons:['Slower, heavier steering','More weight and drag','No cornering gain on the stock rim'],
+   alt:['Sport-compound tyres in the stock size give real grip','For a genuinely wider tyre, fit a wider rim with it']},
+  {id:'lightw',name:'Lightweight alloy or forged wheels',fit:'adapt',fx:{kg:-3.5,hd:7,br:2},cost:[35,90],
+   why:'Wheels are unsprung and rotating mass. A lighter wheel has less gyroscopic resistance, so the bike turns in faster, and less inertia, so it accelerates and stops a little better than the weight saving alone suggests.',
+   needs:['Matching axle diameter, bearings and spacers','Brake disc bolt pattern and offset that line up with the caliper','ABS tone ring carried over with the correct sensor gap','Cush-drive compatibility at the rear'],
+   pros:['Quicker steering','Tubeless tyres on bikes that came with tubes','Better suspension response'],
+   cons:['Expensive','Cast or forged rims bend more easily than spoked rims on broken roads'],
+   alt:['Tubeless conversion of the stock rims with sport tyres is far cheaper']}
+ ],
+ suspension:[
+  {id:'stock',name:'Stock fork and rear shock'},
+  {id:'fork',name:'Fork springs, heavier oil and emulators',fit:'adapt',fx:{hd:6,br:3},cost:[6,15],
+   why:'Budget forks use a fixed orifice for damping, which is too soft slowly and too harsh fast. Springs matched to rider weight set the sag correctly, and an emulator valve adds speed-sensitive damping inside the stock fork.',
+   needs:['Spring rate chosen for rider weight with luggage','Emulators sized to the fork tube inner diameter','Fork oil level and viscosity set to the kit instructions'],
+   pros:['Less brake dive','Front tyre stays in contact over bumps','Keeps the stock fork'],
+   cons:['Needs fork strip-down','Wrong spring rate makes it worse than stock'],
+   alt:['Fresh oil at the correct level is a low-cost first step']},
+  {id:'shocks',name:'Adjustable rear shocks',fit:'bolt',fx:{hd:8},cost:[15,40],
+   why:'Stock shocks are built to a price with a single compromise setting. A shock with adjustable preload and rebound damping lets you set sag for your weight and stop the rear from pogoing after a bump.',
+   needs:['Same eye-to-eye length as stock, unless you want to change ride height','Matching mount bush diameters top and bottom','Sag set to about a third of travel with the rider seated'],
+   pros:['Controlled ride with a pillion or luggage','More stable in fast corners','Bolt on, bolt off'],
+   cons:['Good ones cost real money','Adjusters need understanding to set'],
+   alt:['Raising preload on the stock shocks helps a little for free']},
+  {id:'lower',name:'Lowering kit, 30 mm',fit:'adapt',fx:{hd:-6,br:-1},cost:[4,10],
+   why:'Lowering shortens suspension travel and reduces cornering clearance. If only one end is lowered, rake and trail change and the steering feel changes with them.',
+   needs:['Front lowered by the same amount by sliding the forks through the yokes','A shortened side stand','A check that the tyre cannot touch the mudguard at full compression'],
+   pros:['Easier reach to the ground','Lower stance'],
+   cons:['Pegs and exhaust ground out earlier','Harsher over speed breakers'],
+   alt:['A lower seat gives reach without losing travel']}
+ ],
+ brakes:[
+  {id:'stock',name:'Stock pads, rubber hoses and discs'},
+  {id:'pads',name:'Sintered pads and braided steel lines',fit:'bolt',fx:{br:10},cost:[4.5,9],
+   why:'Rubber hoses swell under pressure, so part of your lever travel is wasted. Braided lines do not swell, which gives a firmer lever. Sintered pads keep their friction when hot. Disc, caliper and ABS unit stay stock.',
+   needs:['Lines of the correct length with the right banjo angles','New copper washers at every banjo','A full bleed with fresh DOT 4 fluid, including the ABS unit'],
+   pros:['Firm, consistent lever','Better bite when hot','ABS behaviour unchanged'],
+   cons:['Sintered pads wear discs slightly faster'],
+   alt:['Fresh fluid and a bleed fixes a spongy lever on its own']},
+  {id:'bigdisc',name:'Oversize front disc with caliper bracket',fit:'adapt',fx:{br:16,kg:0.4,hd:-1},cost:[12,30],
+   why:'Braking torque is pad force times disc radius. A larger disc gives more torque for the same lever pressure and more surface to shed heat. The caliper has to move outward on a bracket to sit on the new radius.',
+   needs:['A relocation bracket machined for this fork and caliper','ABS sensor and tone ring kept, with a gap of about 1 mm','Wheel spokes or rim clearing the caliper in its new position','A front tyre good enough to use the extra braking'],
+   pros:['Shorter stops with less lever effort','More fade resistance downhill'],
+   cons:['Adds unsprung weight at the front','More than the stock tyre can use on some bikes'],
+   alt:['Pads and lines first; most road bikes are limited by tyre grip, not disc size']}
+ ],
+ body:[
+  {id:'stock',name:'Stock seat, mudguards and battery'},
+  {id:'tidy',name:'Tail tidy, bar-end mirrors, LED indicators',fit:'adapt',fx:{kg:-1.5},cost:[4,10],
+   why:'These are styling parts with a small weight saving. LED indicators draw less current, so the stock flasher relay blinks fast unless it is changed or resistors are added.',
+   needs:['An LED-compatible flasher relay','A number plate that stays visible and lit','Mirrors that still show the road behind'],
+   pros:['Cleaner tail and front end','A bit lighter'],
+   cons:['More spray on your back in the rain','Number plate position can attract a fine'],
+   alt:['Shorter stock-style mudguard keeps spray protection'],legal:'Number plate angle, lighting and mirrors are regulated. Keep the plate upright and lit.'},
+  {id:'light',name:'Single seat, alloy mudguards, lithium battery',fit:'adapt',fx:{kg:-7,hd:2},cost:[18,40],
+   why:'Weight removed from high up and from the ends of the bike helps most, because it lowers the centre of gravity and the effort needed to change direction. A lithium battery saves 2 to 3 kg on its own.',
+   needs:['A charging system voltage that suits a lithium battery','Seat base mounts that match the frame rails','Mudguard stays that still brace the fork'],
+   pros:['Lighter and more eager','Custom look'],
+   cons:['No pillion','Lithium batteries dislike deep discharge'],
+   alt:['Alloy mudguards alone give the look for less']},
+  {id:'tour',name:'Crash guards, panniers and touring screen',fit:'bolt',fx:{kg:14,hd:-4,fe:-4,drag:1.1},cost:[12,35],
+   why:'Touring kit adds mass and frontal area. Weight behind the rear axle lightens the front tyre, and the screen and boxes add drag that the engine has to push through.',
+   needs:['Frame-mounted racks, not ones hung from the mudguard','Heavier items packed low and forward','More rear preload when loaded'],
+   pros:['Carries luggage, protects the engine in a fall','Less wind fatigue'],
+   cons:['Heavier, slower and thirstier','Can weave at speed if loaded badly'],
+   alt:['Soft saddlebags weigh a fraction of hard panniers']}
+ ]
+},
+car:{
+ exhaust:[
+  {id:'stock',name:'Stock exhaust with catalytic converter'},
+  {id:'catback',name:'Cat-back exhaust',fit:'bolt',fx:{p:{na:2.5,turbo:3.5},tq:{na:1.5,turbo:3},kg:-4,db:7},cost:[25,90],
+   why:'Everything behind the catalytic converter is replaced with wider, smoother pipe and a freer muffler. Emissions hardware and every sensor stay stock, so no tune is needed.',
+   needs:['A system made for this body so hangers and flange line up','New gasket at the cat flange','A resonator in the mid-pipe if you want to avoid cabin drone'],
+   pros:['Better note with no check-engine light','A little more power, more so on a turbo engine','Lighter than the stock box'],
+   cons:['Can drone at highway rpm','Small gain on a naturally aspirated engine'],
+   alt:['A rear muffler swap alone changes the sound for a third of the price'],legal:LAW_EX},
+  {id:'downpipe',name:'Downpipe with high-flow catalyst',only:'turbo',fit:'adapt',needFuel:1,fx:{p:9,tq:8,db:9,rel:-2,kg:-2},cost:[35,110],
+   why:'The downpipe sits directly after the turbine. The pressure drop across the turbine is what drives the turbo, so cutting back-pressure here lets it spool earlier and flow more. The ECU sees the change through its sensors and needs a matching map.',
+   needs:['A matching ECU map, or the rear oxygen sensor will raise a fault','New turbo outlet gasket and studs','Heat wrap near wiring and the steering rack'],
+   pros:['Largest exhaust gain on a turbo car','Earlier boost','Unlocks a stage 2 map'],
+   cons:['Check-engine light without a tune','Emissions legality depends on the catalyst fitted'],
+   alt:['Cat-back only, if you want to stay tune-free'],legal:LAW_EX},
+  {id:'header',name:'Tuned header with cat-back',only:'na',fit:'adapt',needFuel:1,fx:{p:6,tq:4,db:10,kg:-5,rel:-1},cost:[40,120],
+   why:'A naturally aspirated engine has no turbo to push air in, so it depends on exhaust pulse timing. Equal-length primary pipes use each cylinder\'s pulse to pull the next one clean. Pipe diameter and length decide where in the rev range that help arrives.',
+   needs:['Oxygen sensor bungs in the stock positions','An ECU remap to match the new airflow','New manifold gasket and heat shielding'],
+   pros:['The meaningful power gain for a non-turbo engine','Stronger top end'],
+   cons:['Low-rpm torque can soften','Needs a tune to work'],
+   alt:['Cat-back alone for sound without tuning'],legal:LAW_EX},
+  {id:'straight',name:'Straight pipe, mufflers removed',fit:'adapt',fx:{p:1,tq:-2,db:18,kg:-9},cost:[6,15],
+   why:'Removing the mufflers cuts weight and adds volume but does little for flow, because the catalyst and manifold remain the restriction. With no resonator, exhaust pulses boom through the cabin at a steady cruise.',
+   needs:['Welded pipe of the stock diameter','Patience from your neighbours'],
+   pros:['Loud','Cheap'],
+   cons:['Cabin drone on the highway','No useful power','Fines'],
+   alt:['A cat-back with a resonator gives a tuned note without the drone'],legal:LAW_EX}
+ ],
+ intake:[
+  {id:'stock',name:'Stock airbox with paper panel filter'},
+  {id:'panel',name:'High-flow panel filter',fit:'bolt',fx:{p:1,tq:1,db:1},cost:[4,8],
+   why:'It drops into the stock airbox, so the engine still breathes cold air from behind the bumper and the airflow sensor sees the same smooth flow it was calibrated for.',
+   needs:['The exact panel size for this airbox','Light oiling only; excess oil coats the airflow sensor'],
+   pros:['No tune, no fault codes','Washable'],
+   cons:['Barely measurable on its own'],
+   alt:['A new stock filter if yours is clogged']},
+  {id:'cai',name:'Cold-air intake with heat shield',fit:'adapt',fx:{p:{na:2.5,turbo:3},tq:2,db:3,rel:-2},cost:[18,55],
+   why:'Cooler air is denser, so each intake stroke carries more oxygen. The kit only helps if the filter is sealed from engine-bay heat. The airflow sensor is calibrated to its housing diameter, so that section must match stock.',
+   needs:['A sensor housing with the stock inner diameter','A sealed heat shield against the bonnet','A filter mounted high enough to stay out of standing water'],
+   pros:['Sharper response and induction sound','Supports a remap'],
+   cons:['Open cone without a shield breathes hot air and loses power','A low-mounted filter can suck in water on flooded roads'],
+   alt:['Panel filter with the stock airbox is safer in the monsoon']}
+ ],
+ ecu:[
+  {id:'stock',name:'Stock ECU map'},
+  {id:'pedal',name:'Throttle pedal controller',fit:'bolt',fx:{},cost:[8,18],
+   why:'It rewrites the pedal signal so that half pedal sends a full-throttle request. The engine makes exactly the same power. The car feels eager because you reach full throttle sooner.',
+   needs:['The plug for this pedal connector'],
+   pros:['Feels livelier in traffic','Unplugs in a minute'],
+   cons:['Zero extra power or torque','Harder to drive smoothly'],
+   alt:['A stage 1 remap changes what the engine actually produces']},
+  {id:'stage1',name:'Stage 1 remap',fit:'adapt',fx:{p:{na:5,turbo:22},tq:{na:4,turbo:27},rel:-4,fe:1},cost:[25,55],
+   why:'On a turbo engine the ECU controls boost pressure, so a remap raises boost, fuel and ignition together and the gain is large. On a naturally aspirated engine there is no boost to raise, so the map can only tidy fuel and timing.',
+   needs:['A tuner with a proven map for this engine code','Good quality high-octane fuel every tank','A clutch in good health: torque rises past what a worn one can hold'],
+   pros:['Best gain per rupee on a turbo car','Stock hardware'],
+   cons:['Voids powertrain warranty','More heat and load on turbo, clutch and gearbox'],
+   alt:['A removable piggyback tuning box gives part of the gain and leaves the ECU untouched']},
+  {id:'stage2',name:'Stage 2 remap',only:'turbo',fit:'adapt',fx:{p:34,tq:40,rel:-9,fe:-2},cost:[40,80],
+   req:[{cat:'exhaust',any:['downpipe']},{cat:'boost',any:['fmic','hybrid']}],reqScale:0.65,
+   reqMsg:'Stage 2 map needs a downpipe and an uprated intercooler. Without them the tuner has to hold boost back, so you get close to stage 1 power.',
+   why:'Stage 2 asks for more boost than the stock exhaust and intercooler can support. The downpipe removes back-pressure, and the bigger intercooler keeps intake temperature down so the ECU does not pull timing.',
+   needs:['Downpipe','Front-mount or uprated intercooler','Uprated clutch on manual cars; a gearbox tune on automatics','Colder spark plugs and shorter service intervals'],
+   pros:['Large power and torque increase','Engine internals usually still stock'],
+   cons:['Clutch and gearbox are now the weak link','Noticeably less reliability margin'],
+   alt:['Stage 1 if this is your only car']}
+ ],
+ boost:[
+  {id:'stock',name:'Stock induction and charge cooling'},
+  {id:'fmic',name:'Front-mount intercooler',only:'turbo',fit:'adapt',fx:{p:3,tq:3,kg:3,rel:3},cost:[30,80],
+   why:'Compressing air heats it. Hot intake air is less dense and makes the ECU retard ignition to prevent knock. A larger intercooler holds intake temperature down, so power stays consistent pull after pull.',
+   needs:['Room behind the bumper; sometimes the crash bar is trimmed','Pipes and couplers of the right diameter with good clamps','Airflow left for the radiator and AC condenser'],
+   pros:['Consistent power in hot weather','Protects the engine under a remap'],
+   cons:['Slightly more turbo lag from the extra volume','Adds weight at the nose'],
+   alt:['An uprated intercooler in the stock position fits without cutting']},
+  {id:'hybrid',name:'Hybrid turbo upgrade',only:'turbo',fit:'fab',fx:{p:28,tq:18,rel:-10,fe:-4},cost:[120,280],
+   req:[{cat:'ecu',any:['stage2']}],reqScale:0.2,
+   reqMsg:'A bigger turbo on the stock map makes almost no extra power. It needs a custom stage 2 map to raise boost and fuel.',
+   why:'A hybrid keeps the stock housing but uses larger compressor and turbine wheels, so it moves more air at high rpm. The stock map, injectors and fuel pump were sized for the old turbo, so everything upstream must grow with it.',
+   needs:['Custom map written for this turbo','Higher-flow injectors and fuel pump','Uprated clutch','Downpipe and intercooler already fitted'],
+   pros:['Power well beyond stage 2','Uses the stock mounting position'],
+   cons:['Expensive, with a chain of supporting parts','More lag low down','Shortens engine and gearbox life'],
+   alt:['Stage 2 on the stock turbo is the sensible ceiling for a daily car']},
+  {id:'kit',name:'Bolt-on turbo kit',only:'na',fit:'fab',fx:{p:45,tq:40,rel:-20,fe:-10,kg:25},cost:[250,500],
+   why:'A naturally aspirated engine runs a high compression ratio and has pistons, rods, injectors and a fuel pump sized for its stock output. Adding boost on top of high compression causes knock unless boost is kept very low or the engine is rebuilt.',
+   needs:['Custom manifold, oil feed and return lines','Bigger injectors, fuel pump and a standalone or fully remapped ECU','Intercooler and piping','Ideally lower-compression pistons and stronger rods','Uprated clutch'],
+   pros:['Transforms the car'],
+   cons:['Costs more than buying the factory turbo model','Reliability depends entirely on the build and tune','Hard to insure or resell'],
+   alt:['Header, intake and remap for an honest 10 percent','Sell and buy the factory turbo version of the same car']}
+ ],
+ wheels:[
+  {id:'stock',name:'Stock wheels and tyres'},
+  {id:'tyres',name:'Performance tyres, stock size',fit:'bolt',fx:{hd:10,br:10,fe:-2},cost:[24,70],
+   why:'Every force the car makes goes through four palm-sized contact patches. A stickier compound in the stock size raises the grip limit for cornering and braking without touching speedometer accuracy, ABS or ride height.',
+   needs:['Stock size, with load and speed rating at least equal to stock','Alignment check after fitting'],
+   pros:['Shorter stopping distance','More cornering grip, wet and dry'],
+   cons:['Wears faster','A little more road noise'],
+   alt:['If you change one thing on a car, change this']},
+  {id:'plus1',name:'Plus-one lightweight alloys, wider tyre',fit:'adapt',fx:{hd:8,br:4,kg:-6,fe:-1},cost:[60,180],
+   why:'Going up one inch in rim and down one step in sidewall keeps the rolling diameter the same, so gearing and the speedometer stay right. The shorter sidewall flexes less, and a lighter wheel cuts unsprung mass.',
+   needs:['Matching bolt pattern (PCD) and centre bore, or hub-centric rings','An offset within about 5 mm of stock so the tyre clears the strut and arch','Rolling diameter within 3 percent of stock'],
+   pros:['Sharper steering','Room for bigger brakes','Lighter if you choose flow-formed or forged wheels'],
+   cons:['Firmer ride','Cheap heavy alloys cancel the benefit'],
+   alt:['Performance tyres on the stock rims for most of the grip at a third of the cost']},
+  {id:'plus3',name:'Oversize wheels, plus-three with low profile',fit:'adapt',fx:{hd:-2,br:-3,kg:14,fe:-6,rel:-4,acc:1.05},cost:[90,250],
+   why:'Large wheels are heavier and carry their mass further from the hub, so the engine and brakes work harder to speed them up and slow them down. A very thin sidewall cannot absorb potholes, so the rim and suspension take the hit.',
+   needs:['Arch and strut clearance at full lock and full bump','Correct load rating','Speedometer recalibration if rolling diameter changes'],
+   pros:['Fills the arches'],
+   cons:['Slower, thirstier and longer stopping','Bent rims and blown sidewalls on bad roads','Harsh ride'],
+   alt:['Plus-one is the largest step that improves the car']}
+ ],
+ suspension:[
+  {id:'stock',name:'Stock springs and dampers'},
+  {id:'springs',name:'Lowering springs, 30 mm',fit:'adapt',fx:{hd:7,br:1,rel:-2},cost:[18,40],
+   why:'Stiffer, shorter springs lower the centre of gravity and reduce body roll. The stock dampers now work in a shorter part of their stroke and against a stiffer spring, which wears them sooner.',
+   needs:['Springs matched to this model\'s axle weights','Wheel alignment after fitting','Dampers in good condition'],
+   pros:['Less roll and dive','Lower stance'],
+   cons:['Scrapes on speed breakers','Shorter damper life'],
+   alt:['Coilovers if you want to set the height yourself']},
+  {id:'coil',name:'Height and damping adjustable coilovers',fit:'adapt',fx:{hd:14,br:3,rel:-1},cost:[90,250],
+   why:'Spring and damper are designed as a pair, with adjustable ride height and damping. You can set corner weights and choose how firm the car is, instead of living with a fixed compromise.',
+   needs:['A kit made for this chassis with the right top mounts','Alignment and height set by someone who knows the car','Ground clearance left for Indian speed breakers'],
+   pros:['Largest handling gain','Tunable for road or track'],
+   cons:['Costly','Easy to set too low and too stiff'],
+   alt:['Lowering springs with uprated dampers for most of the benefit']},
+  {id:'lift',name:'Lift kit, 2 inch',fit:'adapt',fx:{hd:-8,br:-3,fe:-4,drag:1.06,kg:12},cost:[35,120],
+   why:'Raising the body raises the centre of gravity, which increases roll and weight transfer. It also changes driveshaft and steering angles. The gain is clearance and room for bigger tyres off road.',
+   needs:['Longer dampers and brake hoses','Caster and alignment correction','A check of driveshaft joint angles'],
+   pros:['Ground clearance and approach angle','Fits larger off-road tyres'],
+   cons:['More roll, worse braking and mileage on the road','Faster wear on joints'],
+   alt:['All-terrain tyres in the stock size help off road without changing geometry']}
+ ],
+ brakes:[
+  {id:'stock',name:'Stock pads, hoses and discs'},
+  {id:'pads',name:'Performance pads, braided lines, high-temperature fluid',fit:'bolt',fx:{br:9},cost:[14,35],
+   why:'Stock pads fade when hot and stock fluid boils on long descents. Pads with a higher working temperature, braided lines and fresh high-boiling-point fluid keep the pedal firm when the brakes are worked hard.',
+   needs:['Pads in the stock shape','A full fluid flush through the ABS unit','Bedding-in as the pad maker describes'],
+   pros:['Firm pedal that stays firm','Stock calipers and wheels'],
+   cons:['More dust','Some pads squeal when cold'],
+   alt:['A fluid flush alone restores a soft pedal']},
+  {id:'bbk',name:'Big brake kit',fit:'adapt',fx:{br:18,kg:3,hd:1},cost:[90,260],
+   req:[{cat:'wheels',any:['plus1','plus3']}],reqScale:1,
+   reqMsg:'Big brake kit: larger calipers and discs rarely clear the stock wheels. Plan on plus-one wheels with enough spoke clearance.',
+   why:'Larger discs give more leverage and far more heat capacity, and multi-piston calipers spread the clamp load. The calipers are physically bigger, so wheel diameter and spoke shape decide whether they fit.',
+   needs:['Wheels that clear the caliper; use the maker\'s template','Front-to-rear brake balance kept sensible','Tyres with the grip to use it'],
+   pros:['Repeated hard stops without fade','Better pedal feel'],
+   cons:['Expensive','Often needs new wheels','Adds unsprung weight unless discs are two-piece'],
+   alt:['Pads, lines and fluid cover road driving']}
+ ],
+ body:[
+  {id:'stock',name:'Stock body and interior'},
+  {id:'strip',name:'Rear seat delete and lightweight battery',fit:'adapt',fx:{kg:-45,hd:2,db:2},cost:[15,45],
+   why:'Less mass helps acceleration, braking and cornering all at once. Removing seats and sound deadening is cheap weight, but it takes away practicality and lets more noise into the cabin.',
+   needs:['Seat-belt and airbag sensors left connected to avoid warning lights','A secure battery mount'],
+   pros:['Quicker in every direction','Cheap per kilogram'],
+   cons:['Two-seater','Louder cabin','Seating changes can conflict with the registration'],
+   alt:['Lighter wheels remove weight where it counts most']},
+  {id:'aero',name:'Front lip, diffuser and rear wing',fit:'adapt',fx:{kg:8,hd:3,drag:1.05},cost:[20,90],
+   why:'Aerodynamic parts trade drag for downforce, and both grow with the square of speed. Below about 100 km/h the effect is small. Parts that are only styled add drag and weight with no downforce.',
+   needs:['Mounting into structure, not just bumper plastic','Front and rear changes balanced so the car stays stable'],
+   pros:['More stable at high speed','Looks purposeful'],
+   cons:['Lower top speed','Front lip scrapes on ramps'],
+   alt:['A small front lip alone reduces lift with little drag']},
+  {id:'armour',name:'Roof rack, steel bumper and underbody armour',fit:'bolt',fx:{kg:60,hd:-5,br:-3,fe:-7,drag:1.12},cost:[40,150],
+   why:'Steel bumpers and racks add mass high up and at the ends of the car, and the rack adds frontal area. More roll, more drag and longer stops follow directly.',
+   needs:['Mounts that do not interfere with airbag crash sensors','Stiffer springs if the load is permanent'],
+   pros:['Protection and carrying capacity off road'],
+   cons:['Slower, thirstier and longer stopping','Rigid bull bars defeat crumple zones'],
+   alt:['Removable roof bars, fitted only when needed'],legal:'Bull bars and crash guards on cars are not permitted under Indian road rules.'}
+ ]
+}};
+
+/* ---------- stock parts wall copy ---------- */
+const WALL={
+ exhaust:{b:'Stock exhaust',c:'Stock exhaust',does:'Carries burnt gas away, cleans it in the catalytic converter and quietens it in the silencer.',built:'Steel header, a ceramic honeycomb catalyst coated in precious metals, and a chambered silencer with baffles and packing.',why:'It has to pass emissions and pass-by noise tests for the life of the vehicle, on any fuel, at low cost.',limit:'The catalyst and baffles add back-pressure. The steel is heavy.'},
+ intake:{b:'Airbox and paper filter',c:'Airbox and panel filter',does:'Feeds clean, cool, calm air to the throttle body.',built:'A sealed plastic box with a pleated paper element and a tuned inlet snorkel.',why:'Paper traps the finest dust. The box volume quietens intake noise and adds mid-range torque through resonance.',limit:'The snorkel is sized for noise limits, not for peak airflow.'},
+ ecu:{b:'Engine control unit',c:'Engine control unit',does:'Reads throttle, rpm, air and oxygen sensors and decides fuel quantity and spark timing many times a second.',built:'A sealed computer with fixed fuel and ignition tables, working in closed loop with the oxygen sensor.',why:'Maps are lean and conservative to meet emissions and to survive poor fuel, heat and neglect.',limit:'It only corrects fuel within a narrow range. Large hardware changes fall outside it.'},
+ finaldrive:{b:'Chain and sprockets',does:'Takes drive from the gearbox to the rear wheel and sets the overall gearing.',built:'A small steel front sprocket, a large steel rear sprocket and a sealed roller chain.',why:'The ratio is picked to balance pull, cruising rpm, mileage and noise tests.',limit:'One ratio cannot suit city, highway and track at once.'},
+ boost:{c:'Turbocharger and intercooler',does:'The turbo uses exhaust energy to compress intake air. The intercooler cools that air before it reaches the engine.',built:'A small turbine and compressor on one shaft, with an air-to-air cooler behind the bumper.',why:'A small turbo spools early for easy low-rpm torque and good economy.',limit:'It runs out of breath at high rpm, and the small intercooler heat-soaks after repeated hard pulls.'},
+ wheels:{b:'Wheels and tyres',c:'Wheels and tyres',does:'The only contact with the road. They carry the load, steer, drive and brake.',built:'Steel or cast-alloy rims with hard, long-wearing tyres.',why:'Chosen for tyre life, low rolling resistance, comfort and price.',limit:'Hard compounds give up grip, most of all in the wet.'},
+ suspension:{b:'Fork and rear shocks',c:'Springs and dampers',does:'Springs carry the weight. Dampers control how fast the springs move, keeping the tyre on the road.',built:'Fixed-rate springs with simple non-adjustable dampers.',why:'One soft setting for an average rider or load keeps cost down and comfort up.',limit:'Dives under braking and wallows when pushed or loaded.'},
+ brakes:{b:'Disc, caliper and hose',c:'Disc, caliper and hose',does:'Turns speed into heat by clamping pads on a spinning disc, with ABS stopping the wheel from locking.',built:'Solid or vented iron discs, sliding calipers, organic pads and rubber hoses.',why:'Quiet, low dust, long pad life and gentle on discs.',limit:'Rubber hoses swell, and organic pads fade when hot.'},
+ body:{b:'Seat, tank and mudguards',c:'Body shell and interior',does:'Carries people and luggage, keeps weather out, and manages airflow.',built:'Pressed steel with thick seat foam and sound deadening.',why:'Durability, comfort, crash safety and price.',limit:'It is heavy, and shaped for comfort more than for speed.'}
+};
+
+/* ---------- drawings ---------- */
+const ART={
+ exhaust:'<path class="ln" d="M12 28 C44 28 40 78 72 78 H94"/><rect class="fl" x="94" y="66" width="26" height="24" rx="6"/><path class="ln" d="M120 78h14"/><rect class="fl" x="134" y="60" width="56" height="36" rx="16"/><circle class="ln" cx="180" cy="78" r="6"/>',
+ intake:'<rect class="fl" x="40" y="28" width="112" height="66" rx="8"/><path class="ln" d="M54 80l8-36 8 36 8-36 8 36 8-36 8 36 8-36 8 36 8-36 8 36"/><path class="ln" d="M152 62h36M40 48H18V30"/>',
+ ecu:'<rect class="fl" x="46" y="24" width="108" height="66" rx="5"/><rect class="ln" x="80" y="42" width="40" height="30"/><path class="ln" d="M60 90v14M76 90v14M92 90v14M108 90v14M124 90v14M140 90v14M56 36h12M56 78h12M132 36h12"/>',
+ finaldrive:'<path class="ln" d="M46 40 L150 24M46 82 L150 98"/><circle class="fl" cx="46" cy="61" r="16"/><circle class="tooth" cx="46" cy="61" r="20"/><circle class="fl" cx="150" cy="61" r="32"/><circle class="tooth" cx="150" cy="61" r="36"/><circle class="ln" cx="150" cy="61" r="8"/>',
+ boost:'<circle class="fl" cx="62" cy="62" r="34"/><path class="ln" d="M62 62m-18 0a18 18 0 1 0 36 0a18 18 0 1 0-36 0M62 44v-26h34M62 62l10-10M62 62l-12 8M62 62l4 14"/><rect class="fl" x="124" y="34" width="60" height="56" rx="4"/><path class="ln" d="M136 34v56M148 34v56M160 34v56M172 34v56"/>',
+ wheelsbike:'<circle class="ln" cx="100" cy="60" r="52" style="stroke-width:9"/><circle class="ln" cx="100" cy="60" r="40"/><circle class="fl" cx="100" cy="60" r="9"/><path class="ln" style="stroke-width:1.5" d="M100 20v80M60 60h80M72 32l56 56M128 32l-56 56M82 24l36 72M118 24l-36 72M64 42l72 36M136 42l-72 36"/>',
+ wheelscar:'<circle class="ln" cx="100" cy="60" r="52" style="stroke-width:11"/><circle class="ln" cx="100" cy="60" r="38"/><circle class="fl" cx="100" cy="60" r="10"/><path class="ln" style="stroke-width:6" d="M100 50V24M109 57l25-9M106 68l15 22M94 68l-15 22M91 57l-25-9"/>',
+ suspension:'<circle class="ln" cx="100" cy="12" r="7"/><circle class="ln" cx="100" cy="110" r="7"/><rect class="fl" x="90" y="62" width="20" height="40" rx="3"/><path class="ln" d="M100 19v43"/><path class="ln" d="M78 26h44l-44 12 44 12-44 12 44 12-44 12h44"/>',
+ brakes:'<circle class="fl" cx="92" cy="60" r="50"/><circle class="ln" cx="92" cy="60" r="20"/><path class="ln" style="stroke-width:5;stroke-dasharray:1 14" d="M92 60m-36 0a36 36 0 1 0 72 0a36 36 0 1 0-72 0"/><path class="fl" d="M128 22h34a8 8 0 0 1 8 8v42a8 8 0 0 1-8 8h-18z"/>',
+ bodybike:'<path class="fl" d="M92 44 Q134 18 184 46 L176 76 L92 78Z"/><path class="fl" d="M14 72 Q22 52 58 56 L92 58 V80 L22 84Z"/><path class="ln" d="M22 96 Q60 84 96 96"/>',
+ bodycar:'<path class="fl" d="M10 86V68q2-10 22-13l30-4 22-20q4-3 12-3h44q8 0 14 5l18 18 24 5q10 2 10 12v18Z"/><path class="ln" d="M66 51l20-16h24v16ZM116 35h26q5 0 9 3l12 13h-47Z"/><circle class="ln" cx="50" cy="88" r="14"/><circle class="ln" cx="158" cy="88" r="14"/>'
+};
+const art=(cat,t)=>`<svg viewBox="0 0 200 120" role="img" aria-label="${cat} drawing">${ART[cat]||ART[cat+t]}</svg>`;
+
+/* ---------- photographs (Wikimedia Commons): [author, licence, file page] ---------- */
+const CW='https://commons.wikimedia.org/wiki/File:';
+const PHOTO={
+ cl350:['Jean-Paul Corlin','CC BY-SA 4.0','Royal_Enfield_m%C3%A9teor_350_%22Classic_350_Signals%22.jpg'],
+ hm450:['Rouv1505','CC BY-SA 4.0','Royal-Enfield-Himalayan-450.jpg'],
+ int650:['Auge=mit','CC BY-SA 4.0','Royal_Enfield_650_Interceptor_A-Seite_noBG.jpg'],
+ gt650:['Cjp24','CC BY-SA 4.0','Royal_Enfield_Continental_GT_650_(1).jpg'],
+ dk390:['Retired electrician','CC0','Moscow,_KTM_Duke_390_motorcycle_September_2024_04.jpg'],
+ r15:['Rikita','CC BY-SA 3.0','Yamaha_YZF-R15.jpg'],
+ ns200:['25 Cents FC','CC BY-SA 3.0','Bajaj_Pulsar_200_NS.jpg'],
+ swift:['Alexander Migl','CC BY-SA 4.0','Suzuki_Swift_(2024)_hybrid_DSC_7922.jpg'],
+ polo:['Robert Basic','CC BY-SA 2.0','VW_Polo_BlueGT_2014_right.jpg'],
+ i20n:['M 93','CC BY-SA 3.0 de','Hyundai_i20_1.0_T-GDI_N_Line_(III,_Facelift)_%E2%80%93_f_01032025.jpg'],
+ city:['Thitichai R','CC BY-SA 4.0','Honda_City_SV_2020.jpg'],
+ thar:['DjDavid1998','CC BY-SA 4.0','Mahindra_Thar_Photoshoot_at_Perupalem_Beach_(West_Godavari_District,_AP,_India)_Djdavid.jpg'],
+ vrs:["AIMHO'S REBELLION 8490s",'CC BY-SA 4.0','2020_Skoda_Octavia_RS-245_sedan_front_view_in_Brunei.jpg'],
+ exhaust_bike:['see file page','CC BY 2.0','Ducati_muffler.jpg'],
+ exhaust_car:['Matti Blume','CC BY-SA 4.0','BMW_M2_M-Performance,_Frankfurt_(1Y7A3529).jpg'],
+ intake_bike:['A7N8X','CC BY-SA 3.0','Filtro_aria_a_coppa.jpg'],
+ intake_car:['Enginedesigner','Public domain','Ram_air_cleaner.jpg'],
+ ecu:['Mib18','CC BY-SA 3.0','Motronic-Steuerger%C3%A4t.JPG'],
+ finaldrive:['Motacilla','CC BY 4.0','Royal_Enfield_Crusader_Cassington_rear_hub_left.jpg'],
+ boost:['Tiia Monto','CC BY 4.0','Turbocharger_3.jpg'],
+ wheels_bike:['PattayaPatrol','CC BY-SA 4.0','DFC_4875_Sleek_custom_cruiser_parked_under_the_night_lights_showcasing_a_polished_chrome_finish_and_intricate_spoked_rear_wheel_at_a_lively_outdoor_bike_meet_in_Ban_Nong_Hin_Chon_Buri.jpg'],
+ wheels_car:['Magnus Bäck','Public domain','Jaguar_XJ_Dynamic_(8x18%22)_alloy_wheel_(2).jpg'],
+ suspension_bike:['Dennis Bratland','CC BY-SA 4.0','Triumph_Bobber_2017_black_rear_shock.jpg'],
+ suspension_car:['Cameron Chapman','CC BY 2.0','Coilovers.jpg'],
+ brakes_bike:['MichaelFrey','CC BY-SA 4.0','Motorcycle_Disc-lock.jpg'],
+ brakes_car:['Riley, Christchurch','CC BY 2.0','Alarm_bells!_(25681917701).jpg'],
+ body_bike:['Motorrad-67','Attribution','Dual-saddle.jpg'],
+ body_car:['Cjp24','CC BY-SA 3.0','Car_body2.jpg']
+};
+Object.assign(PHOTO,{"bike_exhaust_slip": ["Motorcycle Writer", "CC BY 2.0", "Akrapovic_cans_on_KTM_motorcycle.jpg"], "bike_exhaust_full": ["see file page", "CC BY-SA 3.0", "Scooter_exhaust.jpg"], "bike_exhaust_short": ["PattayaPatrol", "CC BY-SA 4.0", "DSC_9372_Custom_chopper_on_display_-_stretched_frame_springer_front_end_and_gleaming_chrome_ready_to_roar.jpg"], "bike_intake_dropin": ["Elwood", "Public domain", "Filtro_aria_K%26N.JPG"], "bike_intake_pod": ["Envy fstop", "CC BY-SA 4.0", "Under_the_hood_of_car.jpg"], "bike_finaldrive_tall": ["A7N8X", "CC BY 3.0", "Pignoni_50_cc.jpg"], "bike_wheels_sport": ["Cjp24", "CC BY-SA 4.0", "Tires_for_motorcycle_racing_(3).jpg"], "bike_suspension_shocks": ["Alextredz", "CC BY-SA 4.0", "Mountain_bike_suspension_rear_ohlins_shock.jpg"], "bike_brakes_pads": ["A7N8X", "CC BY-SA 3.0", "Brake_pad.jpg"], "bike_brakes_bigdisc": ["Hu Nhu", "CC0", "Brembo_motorcycle_brake.jpg"], "bike_body_light": ["Ronald Saunders from Warrington, UK", "CC BY-SA 2.0", "Flickr_-_ronsaunders47_-_NORTON_COMMANDO_961_SPORT..jpg"], "bike_body_tour": ["CheminduCret", "CC BY-SA 4.0", "Moto_Guzzi_Breva_V_1100_(2005)_with_original_touring_accessories.jpg"], "car_exhaust_catback": ["section215 from NYC", "CC BY 2.0", "Akrapovic_Slip-On_exhaust_system_for_BMW_E92_M3.jpg"], "car_exhaust_header": ["Iain Cameron from Ellon, Scotland", "CC BY 2.0", "Engine_LHS_Exhaust_Manifold_(40561340735).jpg"], "car_intake_panel": ["Royalbroil", "CC BY-SA 2.5", "K%26NAirFilterAndRechargerKit.jpg"], "car_intake_cai": ["Gearheadgirl", "CC BY 3.0", "Cool-Air-intake.jpg"], "car_ecu_pedal": ["see file page", "Public domain", "Pedal_Locations_in_2007_Subaru_Legacy_cropped.jpg"], "car_ecu_stage1": ["Marek \u015alusarczyk (Tupungato) Photo portf", "CC BY 3.0", "005_Chassis_dynamometer_car_testing_in_car_factory_-_Opel_Factory_in_Gliwice,_Poland_-_Rollenpr%C3%BCfstand.jpg"], "car_boost_fmic": ["Jredwards at English Wikipedia", "CC BY-SA 3.0", "Front_mounted_intercooler.jpg"], "car_boost_hybrid": ["Piero at Dutch Wikipedia", "CC BY-SA 3.0", "Turbocompressor.JPG"], "car_boost_kit": ["FotoSleuth", "CC BY 2.0", "Toyota_Celica_coupe_(29396012658).jpg"], "car_wheels_tyres": ["Damian B Oh", "CC BY 4.0", "Range_Rover_Sport_SV_Edition_One_L461_Carbon_Bronze_Matte_(21).jpg"], "car_wheels_plus1": ["Rogerzilla at English Wikipedia", "CC BY-SA 3.0", "BBS_forged_cross-spoke_aluminium_wheel_1991_a.jpg"], "car_suspension_springs": ["Torte2oo1", "CC BY-SA 4.0", "20170514_201944_HDR.jpg"], "car_suspension_coil": ["Cameron Chapman", "CC BY 2.0", "Coilovers.jpg"], "suspension_car": ["Michael Robinson (unixxx)", "CC BY-SA 3.0", "Jeep_Liberty_Coilovers_2005.jpg"], "car_suspension_lift": ["G.Goodwin Jr. and Snark", "CC BY-SA 3.0", "2003_Jeep_Wrangler_Sport_with_aftermarket_wheels.jpg"], "car_brakes_bbk": ["Damian B Oh", "CC BY 4.0", "Range_Rover_Sport_SV_Edition_One_L461_Carbon_Bronze_Matte_(22).jpg"], "car_body_aero": ["Pitstop 007", "CC BY-SA 4.0", "Rear_wing,_suspension_and_engine_of_the_Tatuus_MSV_GB3-025.jpg"], "car_body_armour": ["Ventora7", "Public domain", "1988_Australian_Niva_with_bullbar_02.jpg"]});
+const ALIAS={car_brakes_pads:'bike_brakes_pads',car_ecu_stage2:'car_ecu_stage1'};
+const pkey=(cat,t)=>PHOTO[cat+'_'+t]?cat+'_'+t:(PHOTO[cat]?cat:null);
+const okey=(t,cat,id)=>{if(id==='stock')return pkey(cat,t);const k=ALIAS[`${t}_${cat}_${id}`]||`${t}_${cat}_${id}`;return PHOTO[k]?k:null};
+const credit=k=>`<a class="credit" href="${CW+PHOTO[k][2]}" target="_blank" rel="noopener">Photo: ${PHOTO[k][0]} · ${PHOTO[k][1]}</a>`;
+const figure=(k,label,note)=>`<figure class="photo"><img src="img/${k}.jpg" alt="${label}" loading="lazy" width="640" height="400">${note?`<span class="shown">${note}</span>`:''}${credit(k)}</figure>`;
+/* photo of the stock part at a station, else the line drawing */
+const pic=(cat,t,label)=>{const k=pkey(cat,t);return k?figure(k,label):`<div class="art">${art(cat,t)}</div>`};
+/* photo of one specific part; falls back to the stock part, labelled as such */
+const opic=(t,cat,o,label)=>{const k=okey(t,cat,o.id);if(k)return figure(k,label);const s=pkey(cat,t);return s?figure(s,label,'No photo of this part yet · stock part shown'):`<div class="art">${art(cat,t)}</div>`};
+
+const hit=(d)=>`<path class="hit" d="${d}"/>`;
+const hot=(cat,label,inner)=>`<g class="hot" data-cat="${cat}" tabindex="0" role="button" aria-label="${label}"><title>${label}</title>${inner}</g>`;
+const DIAGRAM={
+ bike:()=>`<svg viewBox="0 0 600 330" role="group" aria-label="Motorcycle parts diagram">
+ <g class="deco"><path d="M392 108 L250 130 L150 232M392 108 L345 246 L258 250 L250 130M258 250 L140 240"/><rect x="264" y="180" width="82" height="68" rx="10"/><rect x="282" y="124" width="46" height="56" rx="6"/><path d="M276 138h58M276 150h58M276 162h58"/><circle cx="424" cy="102" r="15"/><path d="M398 100 L384 74 L360 70"/></g>
+ ${hot('body','Body and weight',`<path d="M292 92 Q340 68 394 96 L386 120 L292 124Z"/><path d="M160 120 Q170 100 215 104 L288 108 V124 L170 128Z"/><path d="M74 200 A72 72 0 0 1 186 186"/>${hit('M170 114H380')}`)}
+ ${hot('wheels','Wheels and tyres',`<circle cx="140" cy="240" r="66" style="stroke-width:13"/><circle cx="140" cy="240" r="50" style="stroke-width:1.5"/><circle cx="460" cy="240" r="66" style="stroke-width:13"/><circle cx="460" cy="240" r="50" style="stroke-width:1.5"/>`)}
+ ${hot('brakes','Brakes',`<circle cx="460" cy="240" r="32" class="tooth"/><rect x="476" y="204" width="18" height="28" rx="4" transform="rotate(22 485 218)"/>${hit('M440 240h40')}`)}
+ ${hot('finaldrive','Final drive',`<circle cx="140" cy="240" r="24" class="tooth"/><circle cx="300" cy="236" r="9"/><path d="M140 216 L300 227M140 264 L300 245"/>${hit('M140 240H300')}`)}
+ ${hot('suspension','Suspension',`<path d="M400 106 L460 240" style="stroke-width:7"/><path d="M206 142 L164 226" style="stroke-width:7"/><path d="M206 142 L164 226" style="stroke-width:13;stroke-dasharray:2 7"/>${hit('M400 106 L460 240M206 142 L164 226')}`)}
+ ${hot('intake','Air intake',`<rect x="212" y="152" width="50" height="40" rx="8"/><path d="M262 168h20M222 162v20M232 162v20M242 162v20M252 162v20"/>`)}
+ ${hot('ecu','Fuelling and ECU',`<rect x="214" y="132" width="34" height="14" rx="3"/><path d="M222 146v5M231 146v5M240 146v5"/>${hit('M214 139h34')}`)}
+ ${hot('exhaust','Exhaust',`<path d="M328 152 C374 158 366 264 330 270 L252 274" style="stroke-width:7"/><rect x="88" y="262" width="166" height="28" rx="14" transform="rotate(-5 252 276)"/>${hit('M328 152 C374 158 366 264 330 270 L100 288')}`)}
+ </svg>`,
+ car:()=>`<svg viewBox="0 0 600 290" role="group" aria-label="Car parts diagram">
+ ${hot('body','Body and weight',`<path d="M38 214V172Q42 150 92 142L176 132L236 86Q246 78 266 78H384Q404 78 420 92L468 134L540 148Q564 152 564 176V214H506A56 56 0 0 0 394 214H206A56 56 0 0 0 94 214Z"/><path d="M196 130L244 92H300V130ZM312 92H380Q394 92 406 102L438 130H312Z"/>`)}
+ ${hot('exhaust','Exhaust',`<path d="M404 238 H120" style="stroke-width:6"/><rect x="50" y="228" width="70" height="20" rx="10"/><path d="M50 238H30"/>${hit('M404 238H30')}`)}
+ ${hot('wheels','Wheels and tyres',`<circle cx="150" cy="214" r="44" style="stroke-width:12"/><circle cx="450" cy="214" r="44" style="stroke-width:12"/><circle cx="150" cy="214" r="32" style="stroke-width:1.5"/><circle cx="450" cy="214" r="32" style="stroke-width:1.5"/>`)}
+ ${hot('brakes','Brakes',`<circle cx="150" cy="214" r="20" class="tooth"/><circle cx="450" cy="214" r="20" class="tooth"/><rect x="458" y="192" width="12" height="20" rx="3"/><rect x="158" y="192" width="12" height="20" rx="3"/>${hit('M440 214h20M140 214h20')}`)}
+ ${hot('suspension','Suspension',`<path d="M150 146l9 6-18 6 18 6-18 6 18 6-9 6M450 146l9 6-18 6 18 6-18 6 18 6-9 6"/>${hit('M150 146v36M450 146v36')}`)}
+ ${hot('ecu','ECU tune',`<rect x="386" y="150" width="30" height="16" rx="3"/><path d="M393 166v5M401 166v5M409 166v5"/>${hit('M386 158h30')}`)}
+ ${hot('boost','Turbo and cooling',`<circle cx="452" cy="126" r="0"/><circle cx="498" cy="188" r="11"/><circle cx="498" cy="188" r="4"/><rect x="538" y="170" width="18" height="32" rx="2"/><path d="M544 170v32M550 170v32M509 188h29"/>${hit('M488 188h66')}`)}
+ ${hot('intake','Air intake',`<rect x="482" y="150" width="40" height="20" rx="4"/><path d="M522 160h34M492 154v12M502 154v12M512 154v12"/>`)}
+ </svg>`
+};
+
+/* ---------- state ---------- */
+const $=(s,r=document)=>r.querySelector(s);
+const byId=id=>V.find(v=>v.id===id);
+const stockBuild=t=>Object.fromEntries(CATS[t].map(([c])=>[c,'stock']));
+const optOf=(t,cat,id)=>PARTS[t][cat].find(o=>o.id===id)||PARTS[t][cat][0];
+const allowed=(v,o)=>!o.only||o.only===v.ind;
+let S={vid:'int650',cat:'exhaust',focus:'slip',builds:{int650:{exhaust:'slip',intake:'dropin',ecu:'stock',finaldrive:'stock',wheels:'sport',suspension:'stock',brakes:'pads',body:'stock'}},example:true};
+try{const saved=JSON.parse(localStorage.getItem('torquebay')||'null');if(saved&&byId(saved.vid)){S=saved;}}catch(e){}
+const save=()=>{try{localStorage.setItem('torquebay',JSON.stringify(S))}catch(e){}};
+const build=()=>{const v=byId(S.vid);if(!S.builds[v.id])S.builds[v.id]=stockBuild(v.t);return S.builds[v.id]};
+
+/* ---------- performance model ---------- */
+const num=(x,v)=>x==null?0:(typeof x==='object'?(x[v.ind]||0):x);
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+function calc(v,b){
+  let P=0,T=0,kg=0,db=0,hd=0,br=0,rel=0,fe=0,gear=1,drag=1,rev=1,acc=1,lo=0,hi=0;const warn=[],good=[];
+  const fuelled=FUELLED.includes(b.ecu);
+  CATS[v.t].forEach(([c])=>{
+    const o=optOf(v.t,c,b[c]),f=o.fx||{};let p=num(f.p,v),t=num(f.tq,v),r=f.rel||0;
+    if(o.needFuel&&!fuelled){if(p>0)p*=0.3;t-=2;r-=5;warn.push(`${o.name}: fitted without a fuelling correction, the engine runs lean. Most of the gain is lost and it runs hotter. Add a ${v.t==='bike'?'fuel controller or reflash':'remap'}.`);}
+    if(o.req&&o.req.some(q=>!q.any.includes(b[q.cat]))){p*=o.reqScale;t*=o.reqScale;warn.push(o.reqMsg);}
+    P+=p;T+=t;kg+=f.kg||0;db+=f.db||0;hd+=f.hd||0;br+=f.br||0;rel+=r;fe+=f.fe||0;gear*=f.gear||1;drag*=f.drag||1;rev*=f.rev||1;acc*=f.acc||1;
+    if(o.cost){lo+=o.cost[0];hi+=o.cost[1];}
+  });
+  if(fuelled&&b.exhaust!=='stock'&&b.intake!=='stock'&&b.exhaust!=='straight'){P+=2;T+=1.5;good.push('Intake, exhaust and fuelling are matched. The engine gets the extra air, sheds it freely, and is fuelled for it, so the parts add up to more than they do apart.');}
+  if(b.ecu==='pedal')good.push('The throttle controller changes pedal feel only. Power and torque on the dials do not move, because the engine output is unchanged.');
+  const pf=1+P/100,tf=1+T/100,w=v.kg+kg,load=75;
+  const ratio=(pf*0.6+tf*0.4)/((w+load)/(v.kg+load));
+  const topP=v.top*Math.cbrt(pf/drag),topG=v.top*1.05*gear*rev;
+  if(topG<topP&&gear<1)warn.push('Top speed is now limited by gearing: the engine reaches its rev limit in top gear before it runs out of power.');
+  if(v.db+db>=95)warn.push('Exhaust note is in the range that draws fines and complaints. A removable baffle brings it down by several decibels.');
+  if(v.rel+rel<60)warn.push('Reliability margin is thin. Shorten service intervals, use good fuel and oil, and expect clutch and gearbox wear.');
+  return{power:v.p*pf,torque:v.tq*tf,weight:w,top:Math.min(topP,topG),topP,topG,gear,rev,acc:v.acc*Math.pow(ratio,-0.9)*Math.pow(gear,0.6)*acc,
+    db:v.db+db,hd:clamp(v.hd+hd-kg/(v.t==='bike'?2.5:18),5,100),br:clamp(v.br+br-kg/(v.t==='bike'?3:22),5,100),rel:clamp(v.rel+rel,5,100),
+    fe:v.fe*(1+fe/100),ptw:v.p*pf/(w/1000),cost:(lo+hi)/2,lo,hi,warn,good};
+}
+
+/* ---------- gauges ---------- */
+const STEPS=[1,2,2.5,3,4,5,6,7.5,10,12.5,15,20,25,30,40,50,60,75,100,125,150,200,250,500];
+const niceMax=t=>4*STEPS.find(s=>4*s>=t);
+function gaugeDefs(v){
+  const k=v.ind==='turbo'?2.1:1.6,st=STEPS.find(s=>Number.isInteger(s)&&s>=v.kg*0.06),wmin=Math.round(v.kg/st)*st-2*st;
+  const pm=niceMax(v.p*k),tm=niceMax(v.tq*k),sm=niceMax(v.top*1.35);
+  return[
+   {k:'top',label:'Top speed',unit:'km/h',min:0,max:sm,dec:0,better:1,red:[sm*0.875,sm]},
+   {k:'power',label:'Power',unit:'bhp',min:0,max:pm,dec:1,better:1,red:[pm*0.875,pm]},
+   {k:'torque',label:'Torque',unit:'Nm',min:0,max:tm,dec:1,better:1},
+   {k:'acc',label:'0 to 100 km/h',unit:'seconds',min:0,max:niceMax(v.acc*1.5),dec:1,better:-1},
+   {k:'ptw',label:'Power to weight',unit:'bhp / tonne',min:0,max:niceMax(v.p/(v.kg/1000)*k),dec:0,better:1},
+   {k:'weight',label:'Kerb weight',unit:'kg',min:wmin,max:wmin+4*st,dec:0,better:-1},
+   {k:'db',label:'Exhaust note',unit:'dB(A) est.',min:60,max:120,dec:0,better:0,red:[95,120]},
+   {k:'hd',label:'Handling',unit:'index',min:0,max:100,dec:0,better:1},
+   {k:'br',label:'Braking',unit:'index',min:0,max:100,dec:0,better:1},
+   {k:'rel',label:'Reliability',unit:'index',min:0,max:100,dec:0,better:1,red:[0,40]},
+   {k:'fe',label:'Mileage',unit:'km / litre',min:0,max:niceMax(v.fe*1.4),dec:1,better:1},
+   {k:'cost',label:'Parts bill',unit:'₹ thousand',min:0,max:v.t==='bike'?240:800,dec:0,better:0}
+  ];
+}
+const C=[100,105];
+const pol=(r,a)=>{const t=(a-90)*Math.PI/180;return[(C[0]+r*Math.cos(t)).toFixed(1),(C[1]+r*Math.sin(t)).toFixed(1)]};
+const arcP=(r,a0,a1)=>{const p=pol(r,a0),q=pol(r,a1);return`M${p[0]} ${p[1]}A${r} ${r} 0 ${a1-a0>180?1:0} 1 ${q[0]} ${q[1]}`};
+const angOf=(d,x)=>-135+270*clamp((x-d.min)/(d.max-d.min),0,1);
+const fmtN=x=>Number.isInteger(x)?x:x.toFixed(1);
+let GD=[];
+function gaugeHTML(d,ghost,note,cls){
+  let ticks='';
+  for(let i=0;i<=16;i++){const a=-135+i*270/16,maj=i%2===0,p=pol(79,a),q=pol(maj?67:72,a);
+    ticks+=`<line class="tick${maj?'':' minor'}" x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}"/>`;
+    if(i%4===0){const n=pol(52,a);ticks+=`<text class="num" x="${n[0]}" y="${n[1]}">${fmtN(d.min+(d.max-d.min)*i/16)}</text>`;}}
+  const red=d.red?`<path class="redarc" d="${arcP(79,angOf(d,d.red[0]),angOf(d,d.red[1]))}"/>`:'';
+  return`<figure class="g${cls?' '+cls:''}" data-k="${d.k}"><svg viewBox="0 0 200 200" role="img"><circle class="bezel" cx="100" cy="105" r="92"/><path class="track" d="${arcP(79,-135,135)}"/>${red}${ticks}
+    ${ghost==null?'':`<path class="ghost" d="M100 31l-5-10h10z" transform="rotate(${angOf(d,ghost).toFixed(1)} 100 105)"/>`}
+    <text class="val" x="100" y="158">–</text><text class="unit" x="100" y="174">${d.unit}</text>
+    <g class="needle" style="transform:rotate(-135deg)"><path d="M96.5 112 L100 34 L103.5 112Z"/></g><circle class="hub" cx="100" cy="105" r="7"/></svg>
+    <figcaption><b>${d.label}</b><span class="delta flat">${note||'stock'}</span></figcaption></figure>`;
+}
+function buildGauges(v){GD=gaugeDefs(v);const base=calc(v,stockBuild(v.t));$('#gauges').innerHTML=GD.map(d=>gaugeHTML(d,base[d.k])).join('')}
+function updateGauges(v,res){
+  const base=calc(v,stockBuild(v.t));
+  GD.forEach(d=>{
+    const el=$(`.g[data-k="${d.k}"]`),x=res[d.k],diff=x-base[d.k];
+    $('.needle',el).style.transform=`rotate(${angOf(d,x).toFixed(1)}deg)`;
+    $('.val',el).textContent=x.toFixed(d.dec);
+    $('svg',el).setAttribute('aria-label',`${d.label} ${x.toFixed(d.dec)} ${d.unit}`);
+    const dl=$('.delta',el),small=Math.abs(diff)<Math.pow(10,-d.dec)/2;
+    if(d.k==='cost'){dl.textContent=res.hi?`₹${res.lo.toFixed(0)}k to ₹${res.hi.toFixed(0)}k`:'nothing fitted';dl.className='delta flat';return;}
+    if(small){dl.textContent='stock';dl.className='delta flat';return;}
+    dl.textContent=`${diff>0?'+':'−'}${Math.abs(diff).toFixed(d.dec)} vs stock`;
+    dl.className='delta '+(d.better===0?'loud':(diff*d.better>0?'up':'down'));
+  });
+}
+
+/* ---------- vehicle-specific reasoning ---------- */
+function vline(v,cat,o){
+  const name=`${v.mk} ${v.n}`;
+  if(cat==='exhaust'){
+    if(v.ind==='turbo')return`The ${name} is turbocharged. The turbine already breaks up exhaust pulses and muffles them, so pipe tuning matters less and back-pressure after the turbo matters more.`;
+    if(v.ls)return`The ${name} is a long-stroke single that makes its torque low in the rev range. It needs a narrow header to keep gas velocity up. An oversize pipe takes away the low-rpm thump the engine is known for.`;
+    if(v.tw)return`The ${name} has a 270-degree twin with two separate headers. Both silencers must change together, and a balance pipe between the headers helps mid-range torque.`;
+    return`The ${name} is naturally aspirated, so it relies on exhaust pulse timing. Pipe diameter and length matter more than how open the system is.`;
+  }
+  if(cat==='ecu'||cat==='boost'){
+    return v.ind==='turbo'?`The ${name} is turbocharged, so the ECU controls boost. That is why tuning gains are large here.`:`The ${name} is naturally aspirated. With no boost to raise, tuning gains are a few percent and come from fuel and ignition timing.`;
+  }
+  if(cat==='finaldrive'&&o.id!=='light'){
+    const [f,r]=v.spr||[15,40],nf=o.id==='tall'?f+1:f,nr=o.id==='short'?r+3:r,ch=((nr/nf)/(r/f)-1)*100;
+    return`${v.spr?`Stock on the ${name} is ${f}/${r} teeth`:`Taking a typical ${f}/${r} setup as the example (count the teeth on your bike)`}, a ratio of ${(r/f).toFixed(2)} to 1. This change makes it ${nf}/${nr}, or ${(nr/nf).toFixed(2)} to 1. That is ${Math.abs(ch).toFixed(1)} percent ${ch>0?'shorter: more wheel torque and more rpm at any speed':'taller: fewer rpm at any speed and less wheel torque'}.`;
+  }
+  if(cat==='wheels'){
+    if(v.t==='bike'){const w=parseInt(v.rt);return o.id==='wide'?`Stock rear on the ${name} is ${v.rt}. One size up, a ${w+10} section, usually clears. Two sizes up needs a wider rim, or the tyre pinches and the contact patch shrinks at lean.`:`Stock sizes on the ${name} are ${v.ft} front and ${v.rt} rear.`;}
+    return o.id==='plus1'?`Stock on the ${name} is ${v.ft}. Plus-one means a ${v.rim+1} inch rim with a sidewall one step lower, keeping the rolling diameter the same.`:`Stock tyre size on the ${name} is ${v.ft}.`;
+  }
+  if(cat==='suspension'&&o.id==='lift')return v.off?`The ${name} is a ladder-frame 4x4, which is the kind of vehicle a lift kit is designed for.`:`The ${name} is a road car with a monocoque body. A lift works against everything its suspension was designed to do.`;
+  if(cat==='suspension'&&v.off&&v.t==='car')return`The ${name} has long-travel suspension and a high centre of gravity. Lowering it gives up the ground clearance it was built for.`;
+  if(cat==='brakes'&&o.id==='bbk')return`The ${name} runs ${v.rim} inch wheels as stock. ${v.rim>=17?'Many kits clear wheels of this size; check with the template.':'Most big brake kits need at least 17 inch wheels.'}`;
+  return'';
+}
+
+/* ---------- rendering ---------- */
+const FIT={stock:'Factory fit',bolt:'Bolts on',adapt:'Fits with changes',fab:'Fabrication job',no:'Not for this engine'};
+function fxChips(v,o){
+  const f=o.fx||{},out=[];const add=(val,txt,goodIfPos,cls)=>{if(!val)return;out.push(`<span class="${cls||((val>0)===goodIfPos?'up':'down')}">${val>0?'+':'−'}${Math.abs(val)}${txt}</span>`)};
+  add(num(f.p,v),'% power',true);add(num(f.tq,v),'% torque',true);add(f.kg,' kg',false);add(f.db,' dB',true,'loud');
+  add(f.hd,' handling',true);add(f.br,' braking',true);add(f.rel,' reliability',true);add(f.fe,'% mileage',true);
+  if(f.gear)out.push(`<span class="flat">${f.gear<1?'shorter':'taller'} gearing</span>`);
+  if(f.drag)out.push(`<span class="down">more drag</span>`);
+  return out.join('')||'<span class="flat">no change to output</span>';
+}
+function renderVehicles(){
+  const v=byId(S.vid);
+  document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',t.dataset.t===v.t));
+  $('#vgrid').innerHTML=V.filter(x=>x.t===v.t).map(x=>`<button class="vcard" type="button" data-v="${x.id}" aria-pressed="${x.id===v.id}">
+   ${PHOTO[x.id]?`<img src="img/${x.id}.jpg" alt="${x.mk} ${x.n}" loading="lazy" width="640" height="400">`:`<span class="noimg">${art('body',x.t)}</span>`}<small>${x.mk}</small><strong>${x.n}</strong><span class="eng">${x.eng}</span>
+   <span class="nums"><span>${x.p} <i>bhp</i></span><span>${x.tq} <i>Nm</i></span><span>${x.kg} <i>kg</i></span><span>${x.top} <i>km/h</i></span></span></button>`).join('');
+}
+function renderLift(){
+  const v=byId(S.vid),b=build(),cats=CATS[v.t];
+  if(!cats.some(([c])=>c===S.cat)){S.cat=cats[0][0];S.focus=b[S.cat];}
+  $('#liftTitle').textContent=`${v.n} on the lift`;
+  $('#diagram').innerHTML=DIAGRAM[v.t]();
+  document.querySelectorAll('#diagram .hot').forEach(g=>{g.classList.toggle('on',g.dataset.cat===S.cat);g.classList.toggle('mod',b[g.dataset.cat]!=='stock');});
+  const mods=cats.filter(([c])=>b[c]!=='stock').length;
+  $('#buildTag').textContent=(S.example?'Example build loaded · ':'')+(mods?`${mods} of ${cats.length} stations modified`:'All stock');
+  $('#chips').innerHTML=cats.map(([c,l])=>`<button class="chip${b[c]!=='stock'?' mod':''}" role="tab" type="button" data-cat="${c}" aria-selected="${c===S.cat}">${l}</button>`).join('');
+  $('#opts').innerHTML=PARTS[v.t][S.cat].map(o=>{const ok=allowed(v,o),sel=b[S.cat]===o.id;
+    return`<button class="opt${sel?' sel':''}${ok?'':' na'}" type="button" data-o="${o.id}" aria-pressed="${sel}">
+     ${(k=>k?`<img class="thumb" src="img/${k}.jpg" alt="" loading="lazy" width="640" height="400">`:'')(okey(v.t,S.cat,o.id)||pkey(S.cat,v.t))}<span class="meta"><span>${ok?FIT[o.fit||'stock']:FIT.no}</span><span>${o.cost?`₹${o.cost[0]}k–${o.cost[1]}k`:'fitted'}</span></span>
+     <b>${o.name}</b><span class="fx">${o.fx?fxChips(v,o):'<span class="flat">baseline</span>'}</span></button>`}).join('');
+  renderJob();
+  const res=calc(v,b);updateGauges(v,res);renderSheet(v,b,res);Game.sync(v,b,res);
+}
+const ul=a=>`<ul>${a.map(x=>`<li>${x}</li>`).join('')}</ul>`;
+function renderJob(){
+  const v=byId(S.vid),b=build(),o=optOf(v.t,S.cat,S.focus||b[S.cat]),catName=CATS[v.t].find(([c])=>c===S.cat)[1],ok=allowed(v,o);
+  const head=(stamp,cls)=>`<div class="job-head"><div><span class="label">Job card · ${catName} · ${v.mk} ${v.n}</span><h3>${o.name}</h3></div><span class="stamp ${cls}">${stamp}</span></div>`;
+  if(o.id==='stock'){const w=WALL[S.cat];
+    $('#job').innerHTML=head('Factory fit','stock')+`<div class="job-cols">${pic(S.cat,v.t,'Stock '+catName.toLowerCase())}<div><h4>What it does</h4><p>${w.does}</p></div><div><h4>Why the factory chose it</h4><p>${w.why}</p></div><div><h4>Where it holds the vehicle back</h4><p>${w.limit}</p></div></div>`;return;}
+  if(!ok){
+    $('#job').innerHTML=head('Not for this engine','no')+`<div class="job-cols"><div><h4>Why it does not apply</h4><p>This part is made for ${o.only==='turbo'?'turbocharged':'naturally aspirated'} engines. ${vline(v,'ecu',o)}</p></div><div><h4>What to look at instead</h4>${ul(PARTS[v.t][S.cat].filter(x=>x.id!=='stock'&&allowed(v,x)).map(x=>x.name).concat(o.alt||[]))}</div></div>`;return;}
+  const vl=vline(v,S.cat,o);
+  $('#job').innerHTML=head(FIT[o.fit],o.fit)+
+   `<div class="job-top">${opic(v.t,S.cat,o,o.name)}<div><h4>Will it fit, and why</h4><p>${o.why}${vl?' '+vl:''}</p></div></div>
+   <div class="job-cols"><div><h4>To make the fit happen</h4>${ul(o.needs)}</div><div><h4>What you gain</h4>${ul(o.pros)}</div><div><h4>What it costs you</h4>${ul(o.cons)}</div><div><h4>If this is not for you</h4>${ul(o.alt)}</div></div>`+
+   (o.legal?`<p class="law"><strong>Road law:</strong> ${o.legal}</p>`:'');
+}
+function renderSheet(v,b,res){
+  $('#sheetBody').innerHTML=CATS[v.t].map(([c,l])=>{const o=optOf(v.t,c,b[c]);return`<tr><td>${l}</td><td>${o.name}</td><td>${FIT[o.fit||'stock']}</td><td>${o.cost?`₹${o.cost[0]}k–${o.cost[1]}k`:'–'}</td></tr>`}).join('');
+  $('#sheetTotal').textContent=res.hi?`₹${res.lo.toFixed(1)}k–${res.hi.toFixed(1)}k`:'₹0';
+  const items=res.warn.map(w=>`<li>${w}</li>`).concat(res.good.map(g=>`<li class="good">${g}</li>`));
+  $('#warns').innerHTML=items.join('')||'<li class="good">No conflicts between the fitted parts.</li>';
+}
+function renderWall(){
+  const v=byId(S.vid);$('#wallTitle').textContent=`Parts wall · ${v.t==='bike'?'motorcycle':'car'}`;
+  $('#wallGrid').innerHTML=CATS[v.t].map(([c,l])=>{const w=WALL[c];
+   const stock=`<article class="part stockp">${pic(c,v.t,'Stock '+l.toLowerCase())}<div class="part-body"><span class="label">Stock · factory fit</span><h3>${w[v.t==='bike'?'b':'c']}</h3>
+   <dl><div><dt>What it does</dt><dd>${w.does}</dd></div><div><dt>How the stock one is built</dt><dd>${w.built}</dd></div><div><dt>Why the factory chose it</dt><dd>${w.why}</dd></div><div><dt>Where it holds back</dt><dd>${w.limit}</dd></div></dl></div></article>`;
+   const mods=PARTS[v.t][c].filter(o=>o.id!=='stock').map(o=>{const ok=allowed(v,o);
+    return`<article class="part${ok?'':' napart'}">${opic(v.t,c,o,o.name)}<div class="part-body"><span class="label modl">Modification · ${FIT[o.fit]}</span><h3>${o.name}</h3>
+    ${ok?'':`<p class="only">Made for ${o.only==='turbo'?'turbocharged':'naturally aspirated'} engines. It does not apply to the ${v.n}.</p>`}
+    <span class="fx">${fxChips(v,o)}</span><span class="price">Parts ₹${o.cost[0]}k–${o.cost[1]}k</span>
+    <dl><div><dt>How it works</dt><dd>${o.why}</dd></div><div><dt>What you gain</dt><dd>${o.pros.join('. ')}.</dd></div><div><dt>What it costs you</dt><dd>${o.cons.join('. ')}.</dd></div></dl>
+    <button class="btn" type="button" data-cat="${c}" data-o="${o.id}">Open job card on the lift</button></div></article>`}).join('');
+   return`<div class="station"><h3 class="st-h">${l}</h3><div class="wall-row">${stock}${mods}</div></div>`}).join('');
+}
+function presets(v){
+  const t=v.ind==='turbo';
+  return v.t==='bike'?{
+   'Sound build':{exhaust:'full',intake:'dropin',ecu:'piggy'},
+   'Performance build':{exhaust:'full',intake:'dropin',ecu:'flash',finaldrive:'short',wheels:'sport',suspension:'shocks',brakes:'pads',body:'light'},
+   'Touring build':{finaldrive:'tall',wheels:'sport',suspension:'shocks',brakes:'pads',body:'tour'}
+  }:{
+   'Sound build':{exhaust:'catback',intake:'cai'},
+   'Performance build':t?{exhaust:'downpipe',intake:'cai',ecu:'stage2',boost:'fmic',wheels:'plus1',suspension:'coil',brakes:'pads'}:{exhaust:'header',intake:'cai',ecu:'stage1',wheels:'plus1',suspension:'coil',brakes:'pads'},
+   'Fast daily':{intake:'panel',ecu:t?'stage1':'stock',wheels:'tyres',brakes:'pads'}
+  };
+}
+function renderPresets(){
+  const v=byId(S.vid);
+  $('#presets').innerHTML=Object.keys(presets(v)).map(k=>`<button class="btn" type="button" data-p="${k}">${k}</button>`).join('')+'<button class="btn" type="button" data-p="">Back to stock</button>';
+}
+function selectVehicle(id){
+  S.vid=id;const v=byId(id);S.cat=CATS[v.t][0][0];S.focus=build()[S.cat];
+  renderVehicles();buildGauges(v);renderPresets();renderWall();
+  requestAnimationFrame(()=>requestAnimationFrame(renderLift));save();
+}
+function selectCat(c){S.cat=c;S.focus=build()[c];renderLift();save();}
+
+/* ---------- events ---------- */
+$('#vgrid').addEventListener('click',e=>{const b=e.target.closest('.vcard');if(b)selectVehicle(b.dataset.v)});
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{const v=byId(S.vid);if(v.t!==t.dataset.t)selectVehicle(V.find(x=>x.t===t.dataset.t).id)}));
+$('#chips').addEventListener('click',e=>{const b=e.target.closest('.chip');if(b)selectCat(b.dataset.cat)});
+$('#diagram').addEventListener('click',e=>{const g=e.target.closest('.hot');if(g)selectCat(g.dataset.cat)});
+$('#diagram').addEventListener('keydown',e=>{const g=e.target.closest('.hot');if(g&&(e.key==='Enter'||e.key===' ')){e.preventDefault();selectCat(g.dataset.cat)}});
+$('#opts').addEventListener('click',e=>{const el=e.target.closest('.opt');if(!el)return;const v=byId(S.vid),o=optOf(v.t,S.cat,el.dataset.o);
+  S.focus=o.id;if(allowed(v,o)){build()[S.cat]=o.id;S.example=false;}renderLift();save();});
+$('#presets').addEventListener('click',e=>{const el=e.target.closest('.btn');if(!el)return;const v=byId(S.vid);
+  S.builds[v.id]=Object.assign(stockBuild(v.t),el.dataset.p?presets(v)[el.dataset.p]:{});S.example=false;S.focus=build()[S.cat];renderLift();save();});
+$('#wallGrid').addEventListener('click',e=>{const b=e.target.closest('.btn');if(!b)return;S.cat=b.dataset.cat;S.focus=b.dataset.o;renderLift();save();$('#job').scrollIntoView({behavior:'smooth',block:'center'})});
+const sh=$('#shutter');
+const openShutter=()=>{sh.classList.add('open');setTimeout(()=>{sh.hidden=true},1600)};
+$('#enter').addEventListener('click',openShutter);
+sh.addEventListener('keydown',e=>{if(e.key==='Escape')openShutter()});
+
+/* ---------- test strip: engine sound, synthesised from revs, cylinders and the exhaust dial ---------- */
+const Snd={ctx:null,on:true,ch:null,boost:0,
+ init(){
+  if(this.ctx){this.ctx.resume();return}
+  const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+  const c=this.ctx=new AC(),G=v=>{const g=c.createGain();g.gain.value=v;return g},O=t=>{const o=c.createOscillator();o.type=t;o.start();return o},
+   F=(t,f,q)=>{const b=c.createBiquadFilter();b.type=t;b.frequency.value=f;b.Q.value=q;return b};
+  this.master=G(0);const comp=c.createDynamicsCompressor();this.master.connect(comp);comp.connect(c.destination);
+  const nb=this.nb=c.createBuffer(1,c.sampleRate*2,c.sampleRate),d=nb.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+  const ns=c.createBufferSource();ns.buffer=nb;ns.loop=true;ns.start();
+  /* firing pulses (saw), a harmonic above, a sub for one and two cylinder lump, and noise for roughness */
+  this.o1=O('sawtooth');this.o2=O('sawtooth');this.o3=O('square');this.g1=G(.6);this.g2=G(.3);this.g3=G(.3);
+  this.nbp=F('bandpass',600,1.2);this.gn=G(.2);
+  /* exhaust: distortion for open pipes, a low-pass that opens with throttle, a resonance for pipe body */
+  this.shape=c.createWaveShaper();this.lp=F('lowpass',700,.8);this.body=F('peaking',120,1.1);this.body.gain.value=9;this.eng=G(0);
+  this.o1.connect(this.g1);this.o2.connect(this.g2);this.o3.connect(this.g3);ns.connect(this.nbp);this.nbp.connect(this.gn);
+  [this.g1,this.g2,this.g3,this.gn].forEach(g=>g.connect(this.shape));
+  this.shape.connect(this.lp);this.lp.connect(this.body);this.body.connect(this.eng);this.eng.connect(this.master);
+  /* turbo whistle and induction hiss */
+  this.ot=O('sine');this.gt=G(0);this.ot.connect(this.gt);this.gt.connect(this.master);
+  this.hp=F('highpass',1400,.7);this.gi=G(0);ns.connect(this.hp);this.hp.connect(this.gi);this.gi.connect(this.master);
+  if(this.ch)this.set(this.ch);
+ },
+ set(ch){
+  this.ch=ch;if(!this.ctx)return;
+  const k=1+ch.open*0.45,cv=new Float32Array(513);for(let i=0;i<513;i++)cv[i]=Math.tanh(k*(i/256-1))/Math.tanh(k);
+  this.shape.curve=cv;this.body.frequency.value=ch.bike?150:95;this.lp.Q.value=0.8+ch.open*0.1;
+  this.g2.gain.value=ch.cyl>=3?0.45:0.25;this.g3.gain.value=ch.cyl<=2?0.5:0.12;
+ },
+ update(rpm,load,limit,dt,cut){
+  const c=this.ctx,ch=this.ch;if(!c||!ch)return;
+  const t=c.currentTime,f=rpm/120*ch.cyl,r=rpm/limit,S=(p,v,k)=>p.setTargetAtTime(v,t,k||0.03);
+  S(this.o1.frequency,f);S(this.o2.frequency,f*2.01);S(this.o3.frequency,f*0.5);
+  S(this.nbp.frequency,clamp(f*6,150,4000));S(this.gn.gain,0.1+0.3*load);
+  S(this.lp.frequency,clamp((300+ch.open*95)*(1+1.7*load)+rpm*0.06,180,9000));
+  S(this.eng.gain,ch.vol*(0.3+0.7*load)*(0.55+0.45*r)*(cut?0.2:1),0.02);
+  this.boost+=((ch.turbo?load*clamp((r-0.22)/0.35,0,1):0)-this.boost)*Math.min(1,dt*3.5);
+  S(this.ot.frequency,1400+this.boost*5200,0.05);S(this.gt.gain,this.boost*this.boost*0.03*(ch.intake?1.8:1),0.05);
+  S(this.gi.gain,load*r*(ch.intake?0.07:0.015),0.05);
+ },
+ quiet(q){if(this.ctx)this.master.gain.setTargetAtTime(q||!this.on?0:0.9,this.ctx.currentTime,0.05)},
+ burst(at,dur,freq,q,gain){
+  const c=this.ctx,s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();s.buffer=this.nb;f.type='bandpass';f.frequency.value=freq;f.Q.value=q;
+  g.gain.setValueAtTime(0.0001,at);g.gain.linearRampToValueAtTime(gain,at+0.005);g.gain.exponentialRampToValueAtTime(0.0001,at+dur);
+  s.connect(f);f.connect(g);g.connect(this.master);s.start(at,Math.random()*1.5,dur+0.05);
+ },
+ /* throttle shut at high revs: crackle on open pipes, blow-off on turbo engines */
+ lift(){
+  const c=this.ctx,ch=this.ch;if(!c||!ch)return;const t=c.currentTime;
+  if(ch.pops)for(let i=0,n=3+Math.random()*4;i<n;i++)this.burst(t+0.08+Math.random()*0.7,0.07,300+Math.random()*900,0.8,ch.vol*1.5);
+  if(ch.turbo&&this.boost>0.45)this.burst(t+0.02,0.32,2600,1,0.1);
+ }
+};
+
+/* ---------- test strip: the run itself ---------- */
+/* per vehicle: cylinders, rev limit, gears */
+const EXTRA={cl350:[1,7000,5],hn350:[1,7000,5],hm450:[1,9000,6],int650:[2,7500,6],gt650:[2,7500,6],dk390:[1,10500,6],r15:[1,11500,6],ns200:[1,10500,6],swift:[3,6500,5],polo:[3,6500,6],i20n:[3,6500,6],city:[4,7000,6],thar:[4,5500,6],vrs:[4,6800,6]};
+const Game=(()=>{
+  const cv=$('#gCanvas'),c=cv.getContext('2d'),DT=1/120,V100=100/3.6,KEY={ArrowUp:'up',KeyW:'up',Space:'up',ArrowDown:'down',KeyS:'down'};
+  const COLP={body:'#cf3a2b',brass:'#c9a24a',rider:'#56616a',helmet:'#ece3cf'},COLG={body:'#7d868c',brass:'#8b959b',rider:'#3a4247',helmet:'#7d868c'};
+  const keys={up:false,down:false},pad={up:false,down:false},el={};
+  let W=0,H=0,ppm=60,cam=0,veh,res,P,PS,ref,refS,look={},look0={},sig='',state='off',pl,gh,m={},tRun=0,tCount=0,lights=0,acc=0,last=0,raf=0,inView=false,
+      thr=0,brk=0,cut=0,popT=0,prevTu=0,wa=0,pitch=0,parts=[],GDg=[];
+  ['gGear','gTime','gDist','gGap','gDb','gMsg','gStart','gThr','gBrake'].forEach(id=>el[id]=$('#'+id));
+
+  /* one physics step. Drive is power-limited (K/v) under a launch cap, drag grows with v squared and cancels drive at the power-limited top speed. */
+  function simStep(s,p,th,br,dt){
+    const v=s.v,top=p.N-1;if(s.shift>0)s.shift-=dt;
+    let a=-p.K*v*v/p.v3-(v>0.1?0.12:0);
+    const limited=s.g===top&&v>=p.vRed[top];
+    if(th>0&&s.shift<=0&&!limited)a+=Math.min(p.cap,th*p.K/Math.max(v,0.6));
+    else if(th<=0&&v>0.1)a-=0.35;
+    if(br>0)a-=br*p.brakeA;
+    s.v=Math.max(0,v+a*dt);s.x+=s.v*dt;s.a=(s.v-v)/dt;
+    if(s.shift<=0){const r=s.v/p.vRed[s.g];
+      if(r>=0.985&&s.g<top&&th>0){s.g++;s.shift=p.shiftT}else if(r<0.36&&s.g>0)s.g--;}
+  }
+  function runTo(p,tv){const s={v:0,x:0,g:0,shift:0};let t=0;while(s.v<tv&&t<80){simStep(s,p,1,0,DT);t+=DT}return t}
+  /* strip parameters from the instrument panel result; K is solved so a full-throttle run hits the panel's 0 to 100 time */
+  function params(v,r){
+    const[cyl,rl,N]=EXTRA[v.id],bike=v.t==='bike',vG=r.topG/3.6,spread=bike?3.2:4.4;
+    const p={bike,cyl,N,limit:rl*r.rev,idle:bike?1300:850,vtop:r.topP/3.6,cap:Math.max(bike?8.5:6.5,V100/r.acc*1.5),brakeA:4.5+5.5*r.br/100,shiftT:bike?0.12:0.2,K:50};
+    p.v3=Math.pow(p.vtop,3);p.vRed=Array.from({length:N},(_,i)=>vG*Math.pow(spread,-(N-1-i)/(N-1)));
+    const tv=Math.min(V100,0.95*Math.min(p.vtop,vG));let lo=0.5,hi=800;
+    for(let i=0;i<34;i++){p.K=(lo+hi)/2;if(runTo(p,tv)>r.acc)lo=p.K;else hi=p.K}
+    return p;
+  }
+  function refRun(p){const s={v:0,x:0,g:0,shift:0},o={};let t=0;
+    while(s.x<400&&t<120){simStep(s,p,1,0,DT);t+=DT;if(!o.t60&&s.v>=60/3.6)o.t60=t;if(!o.t100&&s.v>=V100)o.t100=t}
+    o.t400=t;o.v400=s.v;return o}
+  function stopDist(p,v0){const s={v:v0,x:0,g:p.N-1,shift:0};let t=0;while(s.v>0.05&&t<60){simStep(s,p,0,1,DT);t+=DT}return s.x}
+
+  function sync(v,b,r){
+    const sg=v.id+JSON.stringify(b);if(sg===sig)return;sig=sg;veh=v;res=r;
+    const sr=calc(v,stockBuild(v.t));P=params(v,r);PS=params(v,sr);ref=refRun(P);refS=refRun(PS);
+    const open=Math.max(0,r.db-v.db);
+    P.snd={cyl:P.cyl,bike:P.bike,open,vol:0.1+0.5*clamp((r.db-70)/40,0,1),turbo:v.ind==='turbo'||b.boost==='kit',intake:['pod','cai'].includes(b.intake),pops:open>=12};
+    Snd.set(P.snd);
+    const off=v.off?1:0;
+    look0=P.bike?{exMod:false,exShort:false,ride:0,topbox:false}:{exMod:false,ride:off*5,R:19+off*3,wing:false,rack:false,tall:!!off};
+    look=P.bike?{exMod:b.exhaust!=='stock',exShort:b.exhaust==='short',ride:b.suspension==='lower'?-3:0,topbox:b.body==='tour'}
+      :{exMod:b.exhaust!=='stock',ride:(({springs:-3,coil:-4,lift:7})[b.suspension]||0)+off*5,R:(({plus1:20,plus3:22})[b.wheels]||19)+off*3,wing:b.body==='aero',rack:b.body==='armour',tall:!!off};
+    const sm=niceMax(v.top*1.35),rm=niceMax(P.limit/1000*1.02);
+    GDg=[{k:'gspd',label:'Speed',unit:'km/h',min:0,max:sm,dec:0,red:[sm*.875,sm]},{k:'grpm',label:'Revs',unit:'× 1000 rpm',min:0,max:rm,dec:1,red:[P.limit/1000,rm]}];
+    $('#gGauges').innerHTML=gaugeHTML(GDg[0],r.top,`panel top ${r.top.toFixed(0)}`,'live')+gaugeHTML(GDg[1],null,`limit ${Math.round(P.limit/100)*100} rpm`,'live');
+    el.sn=$('#gGauges [data-k="gspd"] .needle');el.sv=$('#gGauges [data-k="gspd"] .val');el.rn=$('#gGauges [data-k="grpm"] .needle');el.rv=$('#gGauges [data-k="grpm"] .val');
+    el.gDb.textContent=r.db.toFixed(0)+' dB';
+    $('#gTune').textContent=`Driving the ${v.mk} ${v.n} as built on the lift: ${r.power.toFixed(1)} bhp, ${r.torque.toFixed(1)} Nm, ${r.weight.toFixed(0)} kg, exhaust ${r.db.toFixed(0)} dB. The panel predicts 0 to 100 km/h in ${r.acc.toFixed(1)} s and ${r.top.toFixed(0)} km/h flat out. Fit a different part on the lift and the run changes with it.`;
+    reset(state==='off'?'off':'staged');
+  }
+  function reset(st){
+    state=st;pl={v:0,x:0,g:0,shift:0,a:0,rpm:P.idle,launched:false};gh={v:0,x:0,g:0,shift:0,a:0};m={};
+    tRun=tCount=lights=acc=thr=brk=cut=popT=wa=pitch=0;parts=[];table();render();hud();
+    if(st==='off')Snd.quiet(true);else{Snd.quiet(false);loop()}
+  }
+  function loop(){if(!raf&&state!=='off'&&inView&&!document.hidden){last=performance.now();raf=requestAnimationFrame(frame)}}
+  function frame(now){
+    raf=0;const d=Math.min(0.1,(now-last)/1000);last=now;const tu=keys.up||pad.up?1:0,tb=keys.down||pad.down?1:0;
+    if(prevTu&&!tu&&pl.rpm>P.limit*0.5){if(P.snd.pops)popT=0.8;Snd.lift()}prevTu=tu;
+    acc+=d;while(acc>=DT){acc-=DT;tick(tu,tb)}
+    render();hud();Snd.update(pl.rpm,thr,P.limit,d,cut>0);
+    el.gThr.classList.toggle('on',!!tu);el.gBrake.classList.toggle('on',!!tb);
+    if(state!=='off'&&inView&&!document.hidden)raf=requestAnimationFrame(frame);else Snd.quiet(true);
+  }
+  function tick(tu,tb){
+    thr+=(tu-thr)*Math.min(1,DT*14);brk+=(tb-brk)*Math.min(1,DT*20);if(thr<.01)thr=0;if(brk<.01)brk=0;if(cut>0)cut-=DT;
+    if(state==='count'){tCount+=DT;lights=Math.min(3,1+Math.floor(tCount/0.8));if(tCount>=3.2){state='run';lights=4;tRun=0}}
+    if(state==='run'){
+      tRun+=DT;if(tRun>1.5)lights=0;
+      if(!pl.launched&&!m.react&&thr>0.05){pl.launched=true;m.react=tRun;table()}
+      if(pl.launched){
+        simStep(pl,P,thr,brk,DT);const t=m.t=tRun-m.react;
+        if(!m.t60&&pl.v>=60/3.6){m.t60=t;table()}
+        if(!m.t100&&pl.v>=V100){m.t100=t;table()}
+        if(!m.t400&&pl.x>=400){m.t400=t;m.v400=pl.v;table()}
+        if(pl.v>(m.vmax||0))m.vmax=pl.v;
+        if(pl.g===P.N-1&&pl.v>=P.vRed[pl.g]&&thr>0&&Math.random()<DT*14)cut=0.04;
+        if(m.t400){
+          if(thr>0.3)m.bf=null;else if(brk>0.3&&!m.bf)m.bf={x:pl.x,v:pl.v};
+          if(pl.v<0.05){if(m.bf){m.bd=pl.x-m.bf.x;m.bs=stopDist(PS,m.bf.v)}state='done';pl.launched=false;pl.a=0;table()}
+        }
+      }
+      if(tRun>=0.3)simStep(gh,PS,1,0,DT);
+    }
+    const lim=P.limit;
+    if(state==='run'&&pl.launched){let tg=Math.max(P.idle,lim*pl.v/P.vRed[pl.g]);if(pl.g===0&&thr>0)tg=Math.max(tg,lim*(0.28+0.22*thr));pl.rpm+=(tg-pl.rpm)*Math.min(1,DT*16)}
+    else{const tg=P.idle+thr*(lim*1.06-P.idle);pl.rpm+=(tg-pl.rpm)*DT*(tg>pl.rpm?5.5:3.2);if(pl.rpm>=lim){pl.rpm=lim-380;cut=0.07}}
+    const wt=P.bike&&pl.a>6.3?clamp((pl.a-6.3)*0.1,0,0.3):0;wa+=(wt-wa)*DT*6;pitch+=(clamp(-pl.a*0.0045,-0.05,0.05)-pitch)*DT*8;
+    const tipX=pl.x-(P.bike?2:4.15),tipY=P.bike?17:12;
+    if(Math.random()<DT*(6+34*thr))parts.push({x:tipX,y:tipY,vy:8+Math.random()*14,r:2+Math.random()*2.5,life:1,f:0});
+    if(popT>0){popT-=DT;if(Math.random()<DT*10)parts.push({x:tipX-0.1,y:tipY,vy:0,r:5+Math.random()*4,life:1,f:1})}
+    for(const q of parts){q.life-=DT*(q.f?9:2.4);q.y+=q.vy*DT;if(!q.f)q.x-=DT*1.2}
+    if(parts.length>70||(parts[0]&&parts[0].life<=0))parts=parts.filter(q=>q.life>0);
+  }
+
+  /* ----- drawing ----- */
+  const L=(...p)=>{c.beginPath();c.moveTo(p[0],p[1]);for(let i=2;i<p.length;i+=2)c.lineTo(p[i],p[i+1]);c.stroke()};
+  function wheel(x,y,R,rot,rim){
+    c.fillStyle='#08090a';c.beginPath();c.arc(x,y,R,0,7);c.fill();c.strokeStyle='#30373c';c.lineWidth=1.5;c.stroke();
+    c.strokeStyle='#aab3b8';c.lineWidth=2;c.beginPath();c.arc(x,y,rim,0,7);c.stroke();
+    c.lineWidth=1.6;c.beginPath();for(let i=0;i<5;i++){const a=rot+i*1.2566;c.moveTo(x,y);c.lineTo(x+Math.cos(a)*rim,y+Math.sin(a)*rim)}c.stroke();
+    c.fillStyle='#aab3b8';c.beginPath();c.arc(x,y,3,0,7);c.fill();
+  }
+  function drawBike(o,rot,col){
+    c.lineCap='round';c.lineJoin='round';wheel(0,-20,20,rot,14);wheel(86,-20,20,rot,14);
+    c.save();c.translate(0,-o.ride);
+    c.strokeStyle='#2c3338';c.lineWidth=4;L(0,-20,32,-30);L(10,-50,3,-24);
+    c.strokeStyle='#59636a';c.lineWidth=3.5;c.beginPath();c.moveTo(54,-40);c.quadraticCurveTo(62,-20,46,-20);c.stroke();
+    c.strokeStyle=o.exMod?col.brass:'#8b959b';c.lineWidth=7;L(46,-20,o.exShort?14:-14,-16);
+    c.fillStyle='#3b444a';c.fillRect(30,-46,30,28);c.fillStyle='#262c30';c.fillRect(36,-46,18,4);
+    c.strokeStyle='#aab3b8';c.lineWidth=4;L(69,-62,86,-20);L(64,-66,72,-66);
+    c.fillStyle=col.body;c.beginPath();c.moveTo(34,-50);c.quadraticCurveTo(50,-68,70,-58);c.lineTo(62,-48);c.closePath();c.fill();
+    c.strokeStyle='#121416';c.lineWidth=7;L(4,-53,34,-53);
+    if(o.topbox){c.fillStyle='#2a3136';c.fillRect(-20,-76,22,19)}
+    c.fillStyle='#ffe9a8';c.beginPath();c.arc(75,-58,4.5,0,7);c.fill();
+    c.strokeStyle=col.rider;c.lineWidth=9;L(20,-58,40,-84);c.lineWidth=5;L(40,-82,56,-72,68,-66);c.lineWidth=7;L(20,-58,42,-46,36,-28);
+    c.fillStyle=col.helmet;c.beginPath();c.arc(45,-94,8.5,0,7);c.fill();
+    c.restore();
+  }
+  function drawCar(o,rot,col,pt){
+    const R=o.R;c.lineCap='round';
+    c.save();c.translate(75,-40-o.ride);c.rotate(pt);if(o.tall)c.scale(1,1.12);c.translate(-75,40);
+    c.fillStyle=col.body;c.beginPath();c.moveTo(-46,-14);c.lineTo(-46,-46);c.quadraticCurveTo(-44,-55,-30,-58);c.lineTo(-8,-82);c.quadraticCurveTo(-3,-86,10,-86);c.lineTo(78,-86);c.quadraticCurveTo(92,-86,104,-74);c.lineTo(126,-56);c.lineTo(186,-48);c.quadraticCurveTo(200,-45,200,-30);c.lineTo(200,-14);c.closePath();c.fill();
+    c.fillStyle='rgba(10,14,18,.9)';c.beginPath();c.moveTo(-18,-58);c.lineTo(-3,-78);c.lineTo(46,-78);c.lineTo(46,-58);c.closePath();c.fill();
+    c.beginPath();c.moveTo(52,-78);c.lineTo(80,-78);c.quadraticCurveTo(90,-78,98,-70);c.lineTo(112,-58);c.lineTo(52,-58);c.closePath();c.fill();
+    c.fillStyle='#ffe9a8';c.fillRect(188,-44,11,6);c.fillStyle='#ff3b2a';c.fillRect(-46,-48,5,9);
+    c.fillStyle=o.exMod?col.brass:'#8b959b';c.fillRect(-54,-17,10,5);
+    c.fillStyle='#15181a';
+    if(o.wing){c.fillRect(-48,-70,28,4);c.fillRect(-36,-66,3,9)}
+    if(o.rack){c.fillRect(4,-93,78,4);c.fillRect(12,-90,3,5);c.fillRect(70,-90,3,5)}
+    c.fillStyle='#090b0c';c.beginPath();c.arc(0,-R+o.ride,R+4,0,7);c.fill();c.beginPath();c.arc(150,-R+o.ride,R+4,0,7);c.fill();
+    c.restore();wheel(0,-R,R,rot,R-7);wheel(150,-R,R,rot,R-7);
+  }
+  /* s.x is the nose of the vehicle; the drawings have their origin under the rear wheel */
+  function vehicle(s,y,sc,alpha,col,mine){
+    const len=P.bike?106:200,x=(s.x-cam)*ppm;if(x<-40||x-(len+60)*sc>W)return false;
+    c.save();c.globalAlpha=alpha;c.translate(x-len*sc,y);c.scale(sc,sc);
+    if(P.bike){if(mine)c.rotate(-wa);drawBike(mine?look:look0,s.x*3,col)}else drawCar(mine?look:look0,s.x*60/(mine?look.R:look0.R),col,mine?pitch:0);
+    c.restore();return true;
+  }
+  function render(){
+    if(!W||!P)return;const dpr=cv.width/W;c.setTransform(dpr,0,0,dpr,0,0);
+    const u=ppm/60,fy=Math.round(H*0.46),laneP=H-22,laneG=laneP-Math.max(44,74*u),sx=x=>(x-cam)*ppm;cam=pl.x-W*(P.bike?0.3:0.46)/ppm;
+    c.fillStyle='#0b0d0f';c.fillRect(0,0,W,fy);
+    for(let i=Math.floor(cam*0.6/9)-1;;i++){const x=(i*9-cam*0.6)*ppm;if(x>W)break;c.fillStyle='#12161a';c.fillRect(x+ppm,fy*0.42,ppm*6.4,fy*0.58);c.fillStyle='#1a2025';c.fillRect(x,fy*0.2,ppm*0.8,fy*0.8)}
+    const fg=c.createLinearGradient(0,fy,0,H);fg.addColorStop(0,'#22292e');fg.addColorStop(1,'#0f1215');c.fillStyle=fg;c.fillRect(0,fy,W,H-fy);
+    for(let i=Math.floor(cam/7)-1;;i++){const x=sx(i*7);if(x>W)break;c.fillStyle='rgba(205,225,255,.045)';c.fillRect(x-ppm*0.6,fy,ppm*3.8,H-fy);
+      c.shadowColor='rgba(215,232,255,.95)';c.shadowBlur=16;c.fillStyle='#f1f6ff';c.fillRect(x,9,ppm*2.6,3.5);c.shadowBlur=0}
+    c.font=`700 ${Math.round(13*Math.max(u,.8))}px "Barlow Condensed",sans-serif`;c.textAlign='center';
+    for(let d=Math.max(50,Math.ceil(cam/50)*50);sx(d)<W+60;d+=50){const x=sx(d);c.fillStyle='rgba(236,227,207,.16)';c.fillRect(x-1,fy-24,2,24);c.fillStyle=d===400?'#c9a24a':'rgba(236,227,207,.6)';c.fillText(d+' m',x,fy-30)}
+    for(const d of[0,400]){const x=sx(d);if(x>-20&&x<W+20)for(let r=0,y=fy;y<H;y+=7,r++){c.fillStyle=r%2?'#ece3cf':'#15181a';c.fillRect(x,y,7,7);c.fillStyle=r%2?'#15181a':'#ece3cf';c.fillRect(x+7,y,7,7)}}
+    c.strokeStyle='rgba(236,227,207,.3)';c.lineWidth=2;c.setLineDash([ppm*2.2,ppm*3.8]);c.lineDashOffset=cam*ppm;c.beginPath();c.moveTo(0,laneG+9);c.lineTo(W,laneG+9);c.stroke();c.setLineDash([]);
+    const seen=vehicle(gh,laneG,u*0.9,0.55,COLG,false),gx=sx(gh.x),gap=gh.x-pl.x;
+    c.fillStyle='rgba(236,227,207,.75)';
+    if(seen){c.fillText('STOCK',gx-(P.bike?50:100)*u*0.9,laneG-(P.bike?106:98)*u*0.9)}
+    else{c.textAlign=gap>0?'right':'left';c.fillText(gap>0?`STOCK ${gap.toFixed(0)} m ahead ▸`:`◂ STOCK ${(-gap).toFixed(0)} m behind`,gap>0?W-10:10,laneG-14);c.textAlign='center'}
+    const nx=sx(pl.x),by=laneP-(P.bike?58:42)*u,hb=c.createLinearGradient(nx,0,nx+ppm*4,0);hb.addColorStop(0,'rgba(255,233,168,.2)');hb.addColorStop(1,'rgba(255,233,168,0)');
+    c.fillStyle=hb;c.beginPath();c.moveTo(nx-4*u,by);c.lineTo(nx+ppm*4,by-16*u);c.lineTo(nx+ppm*4,laneP);c.closePath();c.fill();
+    vehicle(pl,laneP,u,1,COLP,true);
+    for(const q of parts){if(q.life<=0)continue;c.fillStyle=q.f?`rgba(255,${150+Math.round(80*q.life)},50,${q.life})`:`rgba(190,200,205,${q.life*0.3})`;c.beginPath();c.arc(sx(q.x),laneP-q.y*u,q.r*u*(q.f?1:2-q.life),0,7);c.fill()}
+    if(lights){const bx=W/2-48;c.fillStyle='rgba(8,10,11,.88)';c.fillRect(bx,22,96,34);for(let i=0;i<3;i++){c.fillStyle=lights===4?'#4fd66a':i<lights?'#ff3b2a':'#2a2f33';c.beginPath();c.arc(bx+18+i*30,39,10,0,7);c.fill()}}
+  }
+  function hud(){
+    const kmh=pl.v*3.6,gap=pl.x-gh.x;
+    el.sn.style.transform=`rotate(${angOf(GDg[0],kmh).toFixed(1)}deg)`;el.sv.textContent=kmh.toFixed(0);
+    el.rn.style.transform=`rotate(${angOf(GDg[1],pl.rpm/1000).toFixed(1)}deg)`;el.rv.textContent=(pl.rpm/1000).toFixed(1);
+    el.gGear.textContent=pl.launched?pl.g+1:'N';el.gTime.textContent=(m.t||0).toFixed(2)+' s';el.gDist.textContent=pl.x.toFixed(0)+' m';
+    el.gGap.textContent=(gap<0?'−':'+')+Math.abs(gap).toFixed(1)+' m';
+    const msg=state==='off'?'Press Start run, or press the throttle to start the engine and hear it':state==='staged'?'Engine running. Blip the throttle, then press Start run':state==='count'?'Staging. Rev it and wait for green':
+      state==='done'?'Run complete. Press Start run to go again':!m.react?'Green. Go':m.t400?'Past 400 m. Brake to a stop to finish, or hold it for top speed':'';
+    if(el.gMsg.textContent!==msg)el.gMsg.textContent=msg;
+    const lb=state==='count'||state==='run'?'Restart run':'Start run';if(el.gStart.textContent!==lb)el.gStart.textContent=lb;
+  }
+  function table(){
+    const f=x=>x==null?'–':x.toFixed(2)+' s',k=x=>(x*3.6).toFixed(0)+' km/h';
+    const rows=[['Reaction to green',f(m.react),'0.00 s','0.30 s'],['0 to 60 km/h',f(m.t60),f(ref.t60),f(refS.t60)],['0 to 100 km/h',f(m.t100),f(ref.t100),f(refS.t100)],
+      ['400 m',m.t400?`${f(m.t400)} at ${k(m.v400)}`:'–',`${f(ref.t400)} at ${k(ref.v400)}`,`${f(refS.t400)} at ${k(refS.v400)}`],
+      ['Top speed',m.vmax?k(m.vmax)+' reached':'–',res.top.toFixed(0)+' km/h',veh.top+' km/h'],
+      ['Braking to a stop',m.bd!=null?`${m.bd.toFixed(0)} m from ${k(m.bf.v)}`:'–','–',m.bs!=null?`${m.bs.toFixed(0)} m from ${k(m.bf.v)}`:'–']];
+    $('#gRes').innerHTML=rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join('');
+    let vd=`A perfect run on this build covers 400 m in ${ref.t400.toFixed(2)} s. The stock ${veh.n} takes ${refS.t400.toFixed(2)} s.`;
+    if(state==='done'&&m.t400){const d=0.3+refS.t400-(m.react+m.t400);vd=d>0?`You reached the 400 m line ${d.toFixed(2)} s before the stock ${veh.n}.`:`The stock ${veh.n} reached the 400 m line ${(-d).toFixed(2)} s before you.`}
+    $('#gVerdict').textContent=vd;
+  }
+
+  /* ----- input ----- */
+  const engineOn=()=>{Snd.init();if(state==='off')reset('staged')};
+  el.gStart.addEventListener('click',()=>{Snd.init();reset('count');$('#game').focus({preventScroll:true})});
+  $('#gStop').addEventListener('click',()=>reset('off'));
+  $('#gMute').addEventListener('click',e=>{Snd.on=!Snd.on;e.currentTarget.textContent=Snd.on?'Sound on':'Sound off';e.currentTarget.setAttribute('aria-pressed',Snd.on);Snd.quiet(state==='off')});
+  [[el.gThr,'up'],[el.gBrake,'down']].forEach(([b,k])=>{
+    b.addEventListener('pointerdown',e=>{e.preventDefault();try{b.setPointerCapture(e.pointerId)}catch(x){}engineOn();pad[k]=true});
+    ['pointerup','pointercancel','lostpointercapture'].forEach(n=>b.addEventListener(n,()=>{pad[k]=false}));
+    b.addEventListener('contextmenu',e=>e.preventDefault());
+  });
+  addEventListener('keydown',e=>{const k=KEY[e.code];if(!k||state==='off'||!inView||(e.target instanceof Element&&e.target.closest('input,textarea,select')))return;e.preventDefault();keys[k]=true});
+  addEventListener('keyup',e=>{const k=KEY[e.code];if(!k)return;if(keys[k])e.preventDefault();keys[k]=false});
+  addEventListener('blur',()=>{keys.up=keys.down=pad.up=pad.down=false});
+  new IntersectionObserver(es=>{inView=es[0].isIntersecting;if(inView&&state!=='off'){Snd.quiet(false);loop()}else if(!inView)Snd.quiet(true)},{threshold:0.15}).observe($('#game'));
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)Snd.quiet(true);else if(inView&&state!=='off'){Snd.quiet(false);loop()}});
+  new ResizeObserver(()=>{const r=cv.getBoundingClientRect();if(!r.width)return;W=r.width;H=r.height;const dpr=Math.min(2,devicePixelRatio||1);cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);ppm=clamp(W/12,36,74);if(P)render()}).observe(cv);
+  /* step: advance the simulation by hand, for testing without the frame clock */
+  return{sync,step(n,up,down){for(let i=0;i<n;i++)tick(up,down);render();hud()}};
+})();
+
+/* ---------- hero: garage photo with its tube lights blinking in turn ---------- */
+/* tube positions measured on the 1920x1416 photo: [x1,y1,x2,y2,width], left and right rows interleaved, near to far */
+const TUBES=[[366,-8,457,100,38],[1451,-8,1379,99,39],[497,161,670,392,28],[1355,152,1312,226,30],[690,421,758,503,18],[1310,227,1216,387,40],
+ [777,526,807,562,11],[1206,406,1134,492,24],[811,566,832,588,8],[1130,498,1090,552,10],[834,592,849,614,8],[1088,561,1070,582,6],[852,620,860,629,5],[1068,588,1048,610,9],[1046,615,1031,631,5]];
+$('#heroBg').innerHTML=`<svg viewBox="0 0 1920 1416" preserveAspectRatio="xMidYMin slice"><defs><filter id="tb1" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="7"/></filter><filter id="tb2" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.5"/></filter></defs>
+<image href="img/hero-bg.jpg" width="1920" height="1416"/>${TUBES.map(([x1,y1,x2,y2,w],i)=>`<g class="tube" style="animation-delay:${(i*0.42).toFixed(2)}s"><line class="off" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke-width="${w*2.1}" filter="url(#${w>15?'tb1':'tb2'})"/><line class="body" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke-width="${Math.max(1.5,w*0.3)}"/></g>`).join('')}</svg>`;
+
+/* ---------- boot ---------- */
+$('#heroTags').innerHTML=[[V.length,'bikes and cars'],[Object.values(PARTS).flatMap(t=>Object.values(t)).flat().filter(o=>o.fit).length,'parts with job cards'],[12,'live dials']].map(([n,l])=>`<div class="tag"><b>${n}</b><span>${l}</span></div>`).join('');
+$('#credits').innerHTML=Object.keys(PHOTO).map(k=>`<a href="${CW+PHOTO[k][2]}" target="_blank" rel="noopener">${k.replace('_',' ')}: ${PHOTO[k][0]}, ${PHOTO[k][1]}</a>`).join(' · ');
+(function(){const v=byId(S.vid);renderVehicles();buildGauges(v);renderPresets();renderWall();if(!S.focus)S.focus=build()[S.cat];renderLift();})();
+</script>
